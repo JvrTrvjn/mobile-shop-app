@@ -7,7 +7,8 @@
   "extends": [
     "eslint:recommended",
     "plugin:preact/recommended",
-    "plugin:preact-hooks/recommended"
+    "plugin:preact-hooks/recommended",
+    "plugin:prettier/recommended"
   ],
   "parserOptions": {
     "ecmaFeatures": {
@@ -18,12 +19,9 @@
   },
   "plugins": ["preact"],
   "rules": {
-    "indent": ["error", 2],
-    "linebreak-style": ["error", "unix"],
-    "quotes": ["error", "single"],
-    "semi": ["error", "always"],
     "no-unused-vars": "warn",
-    "preact/no-unknown-element": "error"
+    "preact/no-unknown-element": "error",
+    "prettier/prettier": ["error", { "singleQuote": true, "semi": false }]
   },
   "settings": {
     "preact": {
