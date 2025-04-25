@@ -1,0 +1,29 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:preact/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["preact"],
+  "rules": {
+    "no-unused-vars": "warn",
+    "prettier/prettier": ["error", { "singleQuote": true, "semi": false }]
+  },
+  "settings": {
+    "preact": {
+      "version": "detect"
+    }
+  }
+}
