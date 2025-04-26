@@ -23,6 +23,12 @@ body {
 	min-height: 100vh;
 }
 
+.app-container {
+	width: 100%;
+	flex: 1;
+	padding: 20px;
+}
+
 header {
 	display: flex;
 	justify-content: flex-end;
