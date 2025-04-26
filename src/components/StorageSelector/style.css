@@ -1,0 +1,43 @@
+/* Estilos para el selector de almacenamiento */
+.storage-selector {
+  margin-bottom: 20px;
+}
+
+.selector-title {
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #333;
+}
+
+.storage-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.storage-option {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f9f9f9;
+}
+
+.storage-option:hover {
+  background-color: #f0f0f0;
+}
+
+.storage-option.selected {
+  background-color: #007bff;
+  color: white;
+  border-color: #0069d9;
+}
+
+.storage-value {
+  font-size: 14px;
+  font-weight: 500;
+}

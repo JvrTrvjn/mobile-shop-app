@@ -34,13 +34,18 @@ export const getProducts = async () => {
  */
 export const getProductDetails = async (productId) => {
   try {
+    console.log(`Making API request to: ${API_URL}/api/product/${productId}`);
+    
     const response = await fetch(`${API_URL}/api/product/${productId}`);
     
     if (!response.ok) {
+      console.error(`API error status: ${response.status} ${response.statusText}`);
       throw new Error(`Error fetching product details: ${response.statusText}`);
     }
     
-    return await response.json();
+    const data = await response.json();
+    console.log('Raw API response data:', data);
+    return data;
   } catch (error) {
     console.error(`Error in getProductDetails for ID ${productId}:`, error);
     throw error;

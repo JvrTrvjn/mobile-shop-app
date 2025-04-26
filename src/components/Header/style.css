@@ -1,0 +1,66 @@
+.app-header {
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo-container {
+  cursor: pointer;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #4a90e2;
+}
+
+.breadcrumb-container {
+  flex-grow: 1;
+  margin-left: 20px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.breadcrumb-home {
+  color: #4a90e2;
+  cursor: pointer;
+}
+
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: #adb5bd;
+}
+
+.breadcrumb-current {
+  color: #6c757d;
+}
+
+.cart-container {
+  margin-left: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .breadcrumb-container {
+    display: none;
+  }
+  
+  .header-content {
+    justify-content: space-between;
+  }
+}

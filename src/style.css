@@ -26,31 +26,18 @@ body {
 .app-container {
 	width: 100%;
 	flex: 1;
-	padding: 20px;
+	display: flex;
+	flex-direction: column;
 }
 
+.main-content {
+	padding: 0 20px;
+	flex: 1;
+}
+
+/* El estilo del header ahora se gestiona desde el componente Header */
 header {
-	display: flex;
-	justify-content: flex-end;
-	background-color: #673ab8;
-}
-
-header nav {
-	display: flex;
-}
-
-header a {
-	color: #fff;
-	padding: 0.75rem;
-	text-decoration: none;
-}
-
-header a.active {
-	background-color: #0005;
-}
-
-header a:hover {
-	background-color: #0008;
+	width: 100%;
 }
 
 main {

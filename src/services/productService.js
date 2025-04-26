@@ -42,6 +42,12 @@ export const fetchProducts = async () => {
  * @returns {Promise<Object>} Promise that resolves to the product details
  */
 export const fetchProductDetails = async (productId) => {
+  if (!productId || productId === 'no-id' || productId === 'undefined') {
+    throw new Error('Invalid product ID');
+  }
+
+  console.log(`Fetching product details for ID: ${productId}`);
+  
   // Check cache first
   const cacheKey = getCacheKey('product', productId);
   const cachedProduct = getFromCache(cacheKey);
@@ -54,6 +60,7 @@ export const fetchProductDetails = async (productId) => {
   // If not in cache or expired, fetch from API
   try {
     const product = await getProductDetails(productId);
+    console.log('API response for product details:', product);
     
     // Save to cache
     saveToCache(cacheKey, product);
