@@ -68,6 +68,11 @@ img:hover {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
+  margin-bottom: 30px;
+}
+
+.product-card-wrapper {
+  height: 100%;
 }
 
 .product-item {

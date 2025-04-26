@@ -1,0 +1,54 @@
+import { useLocation } from 'preact-iso';
+import { useEffect, useState } from 'preact/hooks';
+import { getCartCount } from '../../services/productService';
+import { CartCounter } from '../CartCounter';
+import { Breadcrumb } from '../Breadcrumb';
+import './style.css';
+
+/**
+ * Header component that displays the app title, breadcrumbs, and cart count
+ * @returns {Object} The Header component
+ */
+export function Header() {
+  const location = useLocation();
+  const [currentPath, setCurrentPath] = useState('/');
+  
+  // Update path when location changes
+  useEffect(() => {
+    const pathname = typeof location.url === 'string' 
+      ? location.url 
+      : window.location.pathname;
+      
+    setCurrentPath(pathname);
+  }, [location]);
+  
+  // Function to navigate to home
+  const navigateToHome = () => {
+    location.route('/');
+  };
+  
+  return (
+    <header className="app-header">
+      <div className="header-content">
+        <div className="logo-container" onClick={navigateToHome}>
+          <h1 className="app-title">Mobile Shop</h1>
+        </div>
+        
+        <div className="breadcrumb-container">
+          {currentPath !== '/' && (
+            <Breadcrumb 
+              items={[
+                { label: 'Home', path: '/' },
+                { label: currentPath.includes('/product/') ? 'Product Details' : 'Not Found' }
+              ]} 
+            />
+          )}
+        </div>
+        
+        <div className="cart-container">
+          <CartCounter />
+        </div>
+      </div>
+    </header>
+  );
+}

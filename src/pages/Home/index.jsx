@@ -1,87 +1,76 @@
-import { useLocation } from 'preact-iso'
-import { useEffect, useState } from 'preact/hooks'
-import { fetchProducts } from '../../services/productService'
+import { useLocation } from 'preact-iso';
+import { useEffect, useState } from 'preact/hooks';
+import { fetchProducts } from '../../services/productService';
+import { ProductCard } from '../../components/ProductCard/index.jsx';
+import './style.css';
 
 export function Home() {
-  const location = useLocation()
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  
-  // Función para navegar programáticamente
-  const navigate = (path) => {
-    location.route(path)
-  }
+  const location = useLocation();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const data = await fetchProducts()
-        setProducts(data)
+        const data = await fetchProducts();
+        setProducts(data);
       } catch (err) {
-        console.error('Error loading products:', err)
-        setError('Error al cargar los productos')
+        console.error('Error loading products:', err);
+        setError('Error al cargar los productos');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
     
-    loadProducts()
-  }, [])
+    loadProducts();
+  }, []);
+
+  // Filtrar productos basado en el término de búsqueda
+  const filteredProducts = products.filter(product => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      product.brand.toLowerCase().includes(searchTermLower) ||
+      product.model.toLowerCase().includes(searchTermLower)
+    );
+  });
 
   return (
     <div className="product-list-page">
-      <h1>Mobile Shop</h1>
-      
-      <div className="search-bar">
+      <div className="search-container">
         <input 
           type="text" 
           placeholder="Buscar por marca o modelo..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
         />
       </div>
       
-      {loading && <p>Cargando productos...</p>}
+      {loading && <p className="loading-message">Cargando productos...</p>}
       
-      {error && <p>{error}</p>}
+      {error && <p className="error-message">{error}</p>}
       
       {!loading && !error && (
-        <div className="product-grid">
-          {products.map(product => (
-            <div key={product.id} className="product-item">
-              <div className="product-image">
-                {product.imgUrl ? (
-                  <img 
-                    src={product.imgUrl} 
-                    alt={`${product.brand} ${product.model}`} 
-                    style={{ width: '150px', height: '150px', objectFit: 'contain' }}
-                  />
-                ) : (
-                  <div style={{ width: '150px', height: '150px', background: '#f0f0f0', margin: '0 auto' }}></div>
-                )}
-              </div>
-              <h3>{product.brand}</h3>
-              <p>{product.model}</p>
-              <p className="price">{product.price ? `${product.price}€` : 'Precio no disponible'}</p>
-              <button 
-                onClick={() => navigate(`/product/${product.id}`)}
-                style={{
-                  display: 'inline-block',
-                  background: '#4a90e2',
-                  color: 'white',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  textDecoration: 'none',
-                  marginTop: '10px',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                Ver detalles
-              </button>
-            </div>
-          ))}
-        </div>
+        <>
+          <div className="results-count">
+            Mostrando {filteredProducts.length} productos
+          </div>
+          
+          <div className="product-grid">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map(product => (
+                <div className="product-card-wrapper" key={product.id}>
+                  <ProductCard product={product} />
+                </div>
+              ))
+            ) : (
+              <p className="no-results">No se encontraron productos que coincidan con "{searchTerm}"</p>
+            )}
+          </div>
+        </>
       )}
     </div>
-  )
+  );
 }
