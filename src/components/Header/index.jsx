@@ -1,8 +1,6 @@
 import { useLocation } from 'preact-iso';
 import { useEffect, useState } from 'preact/hooks';
-import { getCartCount } from '../../services/productService';
 import { CartCounter } from '../CartCounter';
-import { Breadcrumb } from '../Breadcrumb';
 import './style.css';
 
 /**
@@ -35,13 +33,15 @@ export function Header() {
         </div>
         
         <div className="breadcrumb-container">
+          {/* We'll use the Breadcrumb component here */}
           {currentPath !== '/' && (
-            <Breadcrumb 
-              items={[
-                { label: 'Home', path: '/' },
-                { label: currentPath.includes('/product/') ? 'Product Details' : 'Not Found' }
-              ]} 
-            />
+            <div className="breadcrumb">
+              <span className="breadcrumb-home" onClick={navigateToHome}>Home</span>
+              <span className="breadcrumb-separator">/</span>
+              <span className="breadcrumb-current">
+                {currentPath.includes('/product/') ? 'Product Details' : 'Not Found'}
+              </span>
+            </div>
           )}
         </div>
         

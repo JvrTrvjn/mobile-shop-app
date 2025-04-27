@@ -10,7 +10,7 @@ import './style.css';
 /**
  * CartCounter component that shows the number of items in the cart
  * Uses CartContext to maintain consistent state across the app
- * @returns {JSX.Element} The CartCounter component
+ * @returns {Object} The CartCounter component
  */
 export function CartCounter() {
   // Use the cart context to get the count

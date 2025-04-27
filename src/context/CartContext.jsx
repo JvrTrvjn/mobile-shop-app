@@ -156,29 +156,63 @@ export function CartProvider({ children }) {
     state: cartState,
     addToCart: async (product, quantity, selectedColor, selectedStorage) => {
       try {
+        console.log('CartContext - addToCart llamado con:', {
+          productId: product.id,
+          selectedColor,
+          selectedStorage
+        });
+        
+        // Asegurarse de que los códigos de color y almacenamiento sean números
+        const colorCode = Number(selectedColor);
+        const storageCode = Number(selectedStorage);
+        
+        if (isNaN(colorCode) || isNaN(storageCode)) {
+          console.error('Códigos de color o almacenamiento inválidos:', {
+            colorCode,
+            storageCode,
+            originalColor: selectedColor,
+            originalStorage: selectedStorage
+          });
+          throw new Error('Códigos de color o almacenamiento inválidos');
+        }
+        
         // Preparar los datos para enviar a la API
         const cartData = {
           id: product.id,
-          colorCode: parseInt(selectedColor, 10),
-          storageCode: parseInt(selectedStorage, 10)
+          colorCode: colorCode,
+          storageCode: storageCode
         };
+        
+        console.log('Enviando datos al API:', cartData);
         
         // Enviar datos a la API
         const response = await addProductToCart(cartData);
-        console.log('API Response:', response);
+        console.log('Respuesta del API:', response);
         
         // Actualizar el contador con el valor devuelto por la API
         if (response && typeof response.count === 'number') {
+          console.log('Actualizando contador de carrito con:', response.count);
           updateCartCount(response.count);
+          
+          // Actualizar el estado del carrito
+          dispatch({
+            type: CartActionTypes.INITIALIZE_CART,
+            payload: { count: response.count }
+          });
+        } else {
+          console.warn('La respuesta del API no contiene un count válido:', response);
         }
         
-        // Actualizar el estado del carrito
+        // Actualizar el estado local del carrito
         dispatch({
           type: CartActionTypes.ADD_TO_CART,
           payload: { product, quantity, selectedColor, selectedStorage }
         });
+        
+        return response;
       } catch (error) {
-        console.error('Error adding product to cart:', error);
+        console.error('Error añadiendo producto al carrito:', error);
+        throw error;
       }
     },
     removeFromCart: (itemIndex) => {

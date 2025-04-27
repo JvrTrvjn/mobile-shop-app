@@ -61,46 +61,17 @@ export function ProductDetail({ id: propId }) {
         
         setProduct(productData);
         
-        // Manejo defensivo de colores - con log detallado para depuración
-        if (productData.colors) {
-          console.log('Colors data structure:', JSON.stringify(productData.colors));
-          if (productData.colors.length > 0) {
-            const firstColor = productData.colors[0];
-            console.log('First color type:', typeof firstColor);
-            
-            // Si firstColor es un objeto con propiedad code
-            if (typeof firstColor === 'object' && firstColor !== null && firstColor.code !== undefined) {
-              console.log('Setting color from object with code:', firstColor.code);
-              setSelectedColor(String(firstColor.code));
-            } 
-            // Si firstColor es un string o un número directamente
-            else if (typeof firstColor === 'string' || typeof firstColor === 'number') {
-              console.log('Setting color directly from primitive value:', firstColor);
-              setSelectedColor(String(firstColor));
-            }
-          }
+        // Establecer valores por defecto para colores y almacenamiento
+        // Usar la estructura correcta options.colors y options.storages
+        if (productData.options && productData.options.colors && productData.options.colors.length > 0) {
+          console.log('Setting default color from options.colors array:', productData.options.colors[0]);
+          setSelectedColor(String(productData.options.colors[0].code));
         }
         
-        // Manejo defensivo de almacenamiento - con log detallado para depuración
-        if (productData.storages) {
-          console.log('Storages data structure:', JSON.stringify(productData.storages));
-          if (productData.storages.length > 0) {
-            const firstStorage = productData.storages[0];
-            console.log('First storage type:', typeof firstStorage);
-            
-            // Si firstStorage es un objeto con propiedad code
-            if (typeof firstStorage === 'object' && firstStorage !== null && firstStorage.code !== undefined) {
-              console.log('Setting storage from object with code:', firstStorage.code);
-              setSelectedStorage(String(firstStorage.code));
-            } 
-            // Si firstStorage es un string o un número directamente
-            else if (typeof firstStorage === 'string' || typeof firstStorage === 'number') {
-              console.log('Setting storage directly from primitive value:', firstStorage);
-              setSelectedStorage(String(firstStorage));
-            }
-          }
+        if (productData.options && productData.options.storages && productData.options.storages.length > 0) {
+          console.log('Setting default storage from options.storages array:', productData.options.storages[0]);
+          setSelectedStorage(String(productData.options.storages[0].code));
         }
-        
       } catch (err) {
         console.error('Error loading product details:', err);
         setError(`Error al cargar los detalles del producto: ${err.message}`);
@@ -170,6 +141,10 @@ export function ProductDetail({ id: propId }) {
     ? location.url 
     : window.location.pathname;
 
+  // Asegurarse de que tenemos las opciones de colores y almacenamiento
+  const colorOptions = product.options?.colors || [];
+  const storageOptions = product.options?.storages || [];
+
   return (
     <div className="product-detail-container">
       <div className="product-detail-content">
@@ -238,7 +213,7 @@ export function ProductDetail({ id: propId }) {
               </div>
               <div className="spec-item">
                 <span className="spec-label">Peso:</span>
-                <span className="spec-value">{product.weight || 'No especificado'}</span>
+                <span className="spec-value">{product.weight ? `${product.weight} g` : 'No especificado'}</span>
               </div>
             </div>
           </div>
@@ -250,9 +225,9 @@ export function ProductDetail({ id: propId }) {
             {/* Selector de colores */}
             <div className="option-selector">
               <h3 className="selector-label">Color:</h3>
-              {product.colors && product.colors.length > 0 ? (
+              {colorOptions.length > 0 ? (
                 <ColorSelector 
-                  colors={product.colors} 
+                  colors={colorOptions} 
                   selectedColor={selectedColor}
                   onColorSelect={handleColorSelect}
                 />
@@ -264,9 +239,9 @@ export function ProductDetail({ id: propId }) {
             {/* Selector de almacenamiento */}
             <div className="option-selector">
               <h3 className="selector-label">Almacenamiento:</h3>
-              {product.storages && product.storages.length > 0 ? (
+              {storageOptions.length > 0 ? (
                 <StorageSelector 
-                  options={product.storages} 
+                  options={storageOptions} 
                   selectedStorage={selectedStorage}
                   onStorageSelect={handleStorageSelect}
                 />
