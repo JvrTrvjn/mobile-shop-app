@@ -1,17 +1,48 @@
 /* Estilos para el botón de añadir al carrito */
 .add-to-cart-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
+  flex-direction: column;
+  width: 100%;
   margin-top: 20px;
 }
 
+/* Mensajes de éxito y error */
+.cart-success, .cart-error {
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.cart-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.cart-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.selection-reminder {
+  color: #856404;
+  font-size: 13px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Controles de cantidad y botón */
 .quantity-selector {
   display: flex;
   align-items: center;
   border: 1px solid #ddd;
   border-radius: 4px;
   overflow: hidden;
+  height: 40px;
+  margin-bottom: 15px;
 }
 
 .quantity-btn {
@@ -20,8 +51,8 @@
   color: #333;
   font-size: 16px;
   font-weight: bold;
-  height: 38px;
-  width: 38px;
+  height: 40px;
+  width: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,14 +78,13 @@
 }
 
 .add-to-cart-btn {
-  flex: 1;
-  min-width: 200px;
-  height: 40px;
+  width: 100%;
+  height: 44px;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -74,16 +104,16 @@
   opacity: 0.65;
 }
 
+.add-to-cart-btn.disabled {
+  background-color: #6c757d;
+}
+
 @media (max-width: 480px) {
   .add-to-cart-container {
     flex-direction: column;
   }
   
   .quantity-selector {
-    width: 100%;
-  }
-  
-  .add-to-cart-btn {
     width: 100%;
   }
 }
