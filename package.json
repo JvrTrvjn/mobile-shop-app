@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "preact": "^10.25.3",
-    "preact-iso": "^2.9.1"
+    "preact-iso": "^2.9.1",
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.27.0",
