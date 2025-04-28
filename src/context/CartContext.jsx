@@ -14,7 +14,7 @@ const CartActionTypes = {
   UPDATE_QUANTITY: 'UPDATE_QUANTITY',
   CLEAR_CART: 'CLEAR_CART',
   INITIALIZE_CART: 'INITIALIZE_CART',
-  SYNC_CART_COUNT: 'SYNC_CART_COUNT', 
+  SYNC_CART_COUNT: 'SYNC_CART_COUNT',
 }
 
 const cartReducer = (state, action) => {
