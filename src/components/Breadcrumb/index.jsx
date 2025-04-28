@@ -1,5 +1,5 @@
-import { useLocation } from 'preact-iso';
-import './style.css';
+import { useLocation } from 'preact-iso'
+import './style.css'
 
 /**
  * Componente de migas de pan para rutas de navegación
@@ -8,29 +8,26 @@ import './style.css';
  * @returns {Object} El componente Breadcrumb
  */
 export function Breadcrumb({ items = [] }) {
-  const location = useLocation();
-  
-  const navigate = (path) => {
+  const location = useLocation()
+
+  const navigate = path => {
     if (path) {
-      location.route(path);
+      location.route(path)
     }
-  };
-  
-  if (!items || items.length === 0) {
-    return null;
   }
-  
+
+  if (!items || items.length === 0) {
+    return null
+  }
+
   return (
     <div className="breadcrumb">
       {items.map((item, index) => (
         <div key={index} className="breadcrumb-item">
           {index > 0 && <span className="breadcrumb-separator">/</span>}
-          
+
           {item.path && index !== items.length - 1 ? (
-            <span 
-              className="breadcrumb-link" 
-              onClick={() => navigate(item.path)}
-            >
+            <span className="breadcrumb-link" onClick={() => navigate(item.path)}>
               {item.label}
             </span>
           ) : (
@@ -39,5 +36,5 @@ export function Breadcrumb({ items = [] }) {
         </div>
       ))}
     </div>
-  );
+  )
 }

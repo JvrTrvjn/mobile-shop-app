@@ -1,5 +1,5 @@
-import { useState } from 'preact/hooks';
-import './style.css';
+import { useState } from 'preact/hooks'
+import './style.css'
 
 /**
  * Selector de color para productos
@@ -11,10 +11,10 @@ import './style.css';
  */
 export function ColorSelector({ colors, onColorSelect, selectedColor }) {
   if (!colors || colors.length === 0) {
-    return null;
+    return null
   }
 
-  const getColorStyle = (colorCode) => {
+  const getColorStyle = colorCode => {
     const colorMap = {
       1: 'black',
       2: 'white',
@@ -25,27 +25,24 @@ export function ColorSelector({ colors, onColorSelect, selectedColor }) {
       7: 'purple',
       8: 'gray',
       9: 'silver',
-      10: 'gold'
-    };
-    
-    return colorMap[colorCode] || '#cccccc';
-  };
+      10: 'gold',
+    }
+
+    return colorMap[colorCode] || '#cccccc'
+  }
 
   return (
     <div className="color-selector">
       {colors.map(color => (
-        <div 
-          key={color.code} 
+        <div
+          key={color.code}
           className={`color-option ${selectedColor === color.code.toString() ? 'selected' : ''}`}
           onClick={() => onColorSelect(color.code.toString())}
         >
-          <div 
-            className="color-swatch" 
-            style={{ backgroundColor: getColorStyle(color.code) }}
-          ></div>
+          <div className="color-swatch" style={{ backgroundColor: getColorStyle(color.code) }} />
           <span className="color-name">{color.name || `Color ${color.code}`}</span>
         </div>
       ))}
     </div>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-const API_URL = 'https://itx-frontend-test.onrender.com';
+const API_URL = 'https://itx-frontend-test.onrender.com'
 
 /**
  * Trae todos los productos de la API
@@ -6,36 +6,36 @@ const API_URL = 'https://itx-frontend-test.onrender.com';
  */
 export const getProducts = async () => {
   try {
-    const response = await fetch(`${API_URL}/api/product`);
-    
+    const response = await fetch(`${API_URL}/api/product`)
+
     if (!response.ok) {
-      throw new Error(`Error fetching products: ${response.statusText}`);
+      throw new Error(`Error fetching products: ${response.statusText}`)
     }
-    
-    return await response.json();
+
+    return await response.json()
   } catch (error) {
-    throw error;
+    throw error
   }
-};
+}
 
 /**
  * Trae el producto por ID de la API
  * @param {string|number} productId - El ID del producto que traer
  * @returns {Promise<Object>} Promisa que retorna el detalle del producto
  */
-export const getProductDetails = async (productId) => {
+export const getProductDetails = async productId => {
   try {
-    const response = await fetch(`${API_URL}/api/product/${productId}`);
-    
+    const response = await fetch(`${API_URL}/api/product/${productId}`)
+
     if (!response.ok) {
-      throw new Error(`Error detalle producto API: ${response.statusText}`);
+      throw new Error(`Error detalle producto API: ${response.statusText}`)
     }
-    
-    return await response.json();
+
+    return await response.json()
   } catch (error) {
-    throw error;
+    throw error
   }
-};
+}
 
 /**
  * Adiciona el producto al carro
@@ -45,22 +45,22 @@ export const getProductDetails = async (productId) => {
  * @param {string|number} productData.storageCode - Seleccionar almacenamiento de codigo
  * @returns {Promise<Object>} Promesa que retorna el contador del carro
  */
-export const addToCart = async (productData) => {
+export const addToCart = async productData => {
   try {
     const response = await fetch(`${API_URL}/api/cart`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(productData)
-    });
-    
+      body: JSON.stringify(productData),
+    })
+
     if (!response.ok) {
-      throw new Error(`Error al adicionar producto al carro: ${response.statusText}`);
+      throw new Error(`Error al adicionar producto al carro: ${response.statusText}`)
     }
-    
-    return await response.json();
+
+    return await response.json()
   } catch (error) {
-    throw error;
+    throw error
   }
-};
+}

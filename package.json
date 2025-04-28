@@ -14,20 +14,20 @@
     "preact-iso": "^2.9.1"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.27.0",
+    "@babel/preset-react": "^7.26.3",
     "@preact/preset-vite": "^2.10.1",
     "@testing-library/preact": "^3.2.3",
     "eslint": "^8.57.1",
-    "eslint-config-prettier": "^10.1.2",
     "eslint-config-preact": "^1.5.0",
+    "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-compat": "^6.0.2",
     "eslint-plugin-preact": "^0.1.0",
     "eslint-plugin-prettier": "^5.2.6",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "jsdom": "^24.0.0",
     "prettier": "^3.5.3",
     "vite": "^6.3.3",
     "vitest": "^1.2.1"
-  },
-  "eslintConfig": {
-    "extends": ["preact", "prettier"]
   }
 }

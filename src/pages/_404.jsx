@@ -2,8 +2,8 @@ import { useLocation } from 'preact-iso'
 
 export function NotFound() {
   const location = useLocation()
-  
-  const navigate = (path) => {
+
+  const navigate = path => {
     location.route(path)
   }
 
@@ -11,7 +11,7 @@ export function NotFound() {
     <div>
       <h1>404: Not Found</h1>
       <p>La página que estás buscando no existe.</p>
-      <button 
+      <button
         onClick={() => navigate('/')}
         style={{
           background: '#4a90e2',
@@ -21,7 +21,7 @@ export function NotFound() {
           textDecoration: 'none',
           marginTop: '10px',
           border: 'none',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
       >
         Volver a la página principal
