@@ -1,6 +1,18 @@
 // @vitest-environment jsdom
-import { render, screen, fireEvent } from '@testing-library/preact';
-import { expect, describe, it, vi } from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/preact';
+import { expect, describe, it, vi, beforeEach, afterEach } from 'vitest';
+
+// Definimos mockNavigate como una variable global para el archivo
+const mockNavigate = vi.fn();
+
+// Mock de useLocation - debe ser declarado ANTES de importar el componente
+vi.mock('preact-iso', () => ({
+  useLocation: () => ({
+    route: mockNavigate
+  })
+}));
+
+// Importamos el componente DESPUÉS de configurar los mocks
 import { ProductCard } from '../../../src/components/ProductCard/index.jsx';
 
 describe('ProductCard Component', () => {
@@ -12,14 +24,15 @@ describe('ProductCard Component', () => {
     imgUrl: 'https://example.com/image.jpg'
   };
 
-  const mockNavigate = vi.fn();
+  // Limpiar el estado del mock antes de cada test
+  beforeEach(() => {
+    mockNavigate.mockClear();
+  });
 
-  // Mock de useLocation
-  vi.mock('preact-iso', () => ({
-    useLocation: () => ({
-      route: mockNavigate
-    })
-  }));
+  // Limpiar el DOM después de cada test
+  afterEach(() => {
+    cleanup();
+  });
 
   it('renders product information correctly', () => {
     render(<ProductCard product={mockProduct} />);
@@ -32,8 +45,9 @@ describe('ProductCard Component', () => {
   it('navigates to product detail when clicked', () => {
     render(<ProductCard product={mockProduct} />);
     
-    const card = screen.getByText('Ver detalles');
-    fireEvent.click(card);
+    // Usar getAllByText y seleccionar el primer elemento si hay más de uno
+    const buttons = screen.getAllByText('Ver detalles');
+    fireEvent.click(buttons[0]);
     
     expect(mockNavigate).toHaveBeenCalledWith('/product/1');
   });

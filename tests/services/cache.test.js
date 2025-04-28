@@ -93,13 +93,18 @@ describe('Cache Service', () => {
       'other_app_key': 'data'
     };
     
-    localStorageMock.length = Object.keys(mockLocalStorage).length;
-    let index = 0;
-    for (const key in mockLocalStorage) {
-      localStorageMock.key.mockReturnValueOnce(key);
-      localStorageMock.getItem.mockReturnValueOnce(mockLocalStorage[key]);
-      index++;
-    }
+    // En lugar de modificar length directamente, configuramos los mocks adecuadamente
+    const keys = Object.keys(mockLocalStorage);
+    localStorageMock.key.mockImplementation((index) => keys[index] || null);
+    // Mock el getter de length para devolver la cantidad correcta de elementos
+    Object.defineProperty(localStorageMock, 'length', {
+      get: () => keys.length
+    });
+    
+    // Configurar getItem para devolver los valores simulados
+    keys.forEach(key => {
+      localStorageMock.getItem.mockImplementationOnce(() => mockLocalStorage[key]);
+    });
 
     clearCache();
 
