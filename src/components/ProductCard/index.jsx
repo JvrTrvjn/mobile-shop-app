@@ -2,10 +2,10 @@ import { useLocation } from 'preact-iso';
 import './style.css';
 
 /**
- * ProductCard component for displaying product information in the list view
- * @param {Object} props - Component props
- * @param {Object} props.product - Product data object
- * @returns {JSX.Element} The ProductCard component
+ * El componente ProductCard que muestra la informacion del producto en la lista
+ * @param {Object} props - Props del componente
+ * @param {Object} props.product - Datos del objeto Product
+ * @returns {Object} El componente ProductCard
  */
 export function ProductCard({ product }) {
   const location = useLocation();
@@ -16,9 +16,7 @@ export function ProductCard({ product }) {
   
   const { id, brand, model, price, imgUrl } = product;
   
-  // Function to navigate to product detail
   const navigateToDetail = () => {
-    console.log('Navigating to product with ID:', id);
     location.route(`/product/${id}`);
   };
   

@@ -8,15 +8,12 @@ import { CartProvider } from './context/CartContext.jsx';
 import './style.css';
 
 export function App() {
-  // Detectar la ruta actual para debugging
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
   console.log('Current path:', currentPath);
   
-  // Comprobar si estamos en una ruta de detalle de producto
   const isProductDetail = currentPath.startsWith('/product/');
   console.log('Is product detail page:', isProductDetail);
   
-  // Extraer ID del producto si estamos en una página de detalle
   let productId = null;
   if (isProductDetail) {
     const match = currentPath.match(/\/product\/([^/]+)/);

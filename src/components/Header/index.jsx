@@ -4,14 +4,13 @@ import { CartCounter } from '../CartCounter';
 import './style.css';
 
 /**
- * Header component that displays the app title, breadcrumbs, and cart count
- * @returns {Object} The Header component
+ * El componente Header que muestra el titulo, breadcrumbs, y contador del carro
+ * @returns {Object} El componente Header
  */
 export function Header() {
   const location = useLocation();
   const [currentPath, setCurrentPath] = useState('/');
   
-  // Update path when location changes
   useEffect(() => {
     const pathname = typeof location.url === 'string' 
       ? location.url 
@@ -20,7 +19,6 @@ export function Header() {
     setCurrentPath(pathname);
   }, [location]);
   
-  // Function to navigate to home
   const navigateToHome = () => {
     location.route('/');
   };
@@ -33,7 +31,6 @@ export function Header() {
         </div>
         
         <div className="breadcrumb-container">
-          {/* We'll use the Breadcrumb component here */}
           {currentPath !== '/' && (
             <div className="breadcrumb">
               <span className="breadcrumb-home" onClick={navigateToHome}>Home</span>

@@ -4,25 +4,18 @@ import { getCartCount } from '../../services/productService';
 import './style.css';
 
 /**
- * CartCounter component that shows the number of items in the cart
- * @returns {Object} The rendered CartCounter component
+ * Componente CartCounter que muestra el número de artículos en el carrito
+ * @returns {Object} El componente CartCounter renderizado
  */
-/**
- * CartCounter component that shows the number of items in the cart
- * Uses CartContext to maintain consistent state across the app
- * @returns {Object} The CartCounter component
- */
+
 export function CartCounter() {
-  // Use the cart context to get the count
   const { state: cartState } = useCart();
   const [count, setCount] = useState(0);
   
-  // Update count when cart state changes
   useEffect(() => {
     setCount(cartState.count);
   }, [cartState.count]);
   
-  // Also listen for cart updates via event for backward compatibility
   useEffect(() => {
     const handleCartUpdate = () => {
       const updatedCount = getCartCount();

@@ -14,9 +14,7 @@ export function ColorSelector({ colors, onColorSelect, selectedColor }) {
     return null;
   }
 
-  // Función para determinar el color CSS según el código
   const getColorStyle = (colorCode) => {
-    // Mapa de códigos comunes a colores CSS
     const colorMap = {
       1: 'black',
       2: 'white',
@@ -30,7 +28,6 @@ export function ColorSelector({ colors, onColorSelect, selectedColor }) {
       10: 'gold'
     };
     
-    // Intentar usar el mapa o devolver un color por defecto
     return colorMap[colorCode] || '#cccccc';
   };
 

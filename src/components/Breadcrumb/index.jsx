@@ -2,22 +2,20 @@ import { useLocation } from 'preact-iso';
 import './style.css';
 
 /**
- * Breadcrumb component for navigation paths
- * @param {Object} props - Component props 
- * @param {Array} props.items - Array of breadcrumb items
- * @returns {Object} The Breadcrumb component
+ * Componente de migas de pan para rutas de navegación
+ * @param {Object} props - Propiedades del componente
+ * @param {Array} props.items - Array de elementos de migas de pan
+ * @returns {Object} El componente Breadcrumb
  */
 export function Breadcrumb({ items = [] }) {
   const location = useLocation();
   
-  // Function to handle navigation
   const navigate = (path) => {
     if (path) {
       location.route(path);
     }
   };
   
-  // If no items provided, return null
   if (!items || items.length === 0) {
     return null;
   }

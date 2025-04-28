@@ -12,7 +12,7 @@ import './style.css';
  * 
  * @param {Object} props - Propiedades del componente
  * @param {string} props.id - ID del producto a mostrar (opcional, también puede extraerse de la URL)
- * @returns {JSX.Element} Componente ProductDetail
+ * @returns {Object} Componente ProductDetail
  */
 export function ProductDetail({ id: propId }) {
   const location = useLocation();
@@ -22,12 +22,10 @@ export function ProductDetail({ id: propId }) {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedStorage, setSelectedStorage] = useState('');
   
-  // Función para navegar programáticamente
   const navigateToHome = () => {
     location.route('/');
   };
   
-  // Obtener el ID del producto desde las props o la URL
   const extractIdFromUrl = () => {
     const pathname = typeof location.url === 'string'
       ? location.url
@@ -37,12 +35,10 @@ export function ProductDetail({ id: propId }) {
     return match ? match[1] : null;
   };
   
-  // Obtener el ID del producto de manera más robusta
   const productId = propId || extractIdFromUrl();
   
   console.log('Product ID being used:', productId);
 
-  // Cargar los detalles del producto cuando el componente se monta o cambia el ID
   useEffect(() => {
     const loadProductDetails = async () => {
       if (!productId) {
@@ -61,8 +57,6 @@ export function ProductDetail({ id: propId }) {
         
         setProduct(productData);
         
-        // Establecer valores por defecto para colores y almacenamiento
-        // Usar la estructura correcta options.colors y options.storages
         if (productData.options && productData.options.colors && productData.options.colors.length > 0) {
           console.log('Setting default color from options.colors array:', productData.options.colors[0]);
           setSelectedColor(String(productData.options.colors[0].code));
@@ -83,7 +77,6 @@ export function ProductDetail({ id: propId }) {
     loadProductDetails();
   }, [productId]);
 
-  // Manejadores para selección de color y almacenamiento
   const handleColorSelect = (colorCode) => {
     console.log('Color selected:', colorCode);
     setSelectedColor(colorCode);
@@ -94,7 +87,6 @@ export function ProductDetail({ id: propId }) {
     setSelectedStorage(storageCode);
   };
 
-  // Renderizar pantalla de carga
   if (loading) {
     return (
       <div className="product-detail-container loading">
@@ -104,7 +96,6 @@ export function ProductDetail({ id: propId }) {
     );
   }
 
-  // Renderizar pantalla de error
   if (error) {
     return (
       <div className="product-detail-container error">
@@ -120,7 +111,6 @@ export function ProductDetail({ id: propId }) {
     );
   }
 
-  // Si no hay producto, no renderizar nada
   if (!product) {
     return (
       <div className="product-detail-container error">
@@ -136,19 +126,16 @@ export function ProductDetail({ id: propId }) {
     );
   }
 
-  // El pathname actual para usar en breadcrumbs o cualquier otra navegación
   const currentPathname = typeof location.url === 'string' 
     ? location.url 
     : window.location.pathname;
 
-  // Asegurarse de que tenemos las opciones de colores y almacenamiento
   const colorOptions = product.options?.colors || [];
   const storageOptions = product.options?.storages || [];
 
   return (
     <div className="product-detail-container">
       <div className="product-detail-content">
-        {/* Primera columna - Imagen del producto */}
         <div className="product-image-column">
           <div className="product-image-container">
             {product.imgUrl ? (
@@ -165,9 +152,7 @@ export function ProductDetail({ id: propId }) {
           </div>
         </div>
         
-        {/* Segunda columna - Detalles y acciones del producto */}
         <div className="product-info-column">
-          {/* Descripción del producto */}
           <div className="product-header">
             <h1 className="product-title">{product.brand} {product.model}</h1>
             <div className="product-price">
@@ -175,7 +160,6 @@ export function ProductDetail({ id: propId }) {
             </div>
           </div>
           
-          {/* Especificaciones del producto */}
           <div className="product-specs">
             <h2 className="specs-title">Especificaciones</h2>
             <div className="specs-grid">
@@ -218,11 +202,9 @@ export function ProductDetail({ id: propId }) {
             </div>
           </div>
           
-          {/* Acciones del producto - Selectores y botón */}
           <div className="product-actions">
             <h2 className="actions-title">Selecciona las opciones</h2>
             
-            {/* Selector de colores */}
             <div className="option-selector">
               <h3 className="selector-label">Color:</h3>
               {colorOptions.length > 0 ? (
@@ -236,7 +218,6 @@ export function ProductDetail({ id: propId }) {
               )}
             </div>
             
-            {/* Selector de almacenamiento */}
             <div className="option-selector">
               <h3 className="selector-label">Almacenamiento:</h3>
               {storageOptions.length > 0 ? (
@@ -250,7 +231,6 @@ export function ProductDetail({ id: propId }) {
               )}
             </div>
             
-            {/* Botón de añadir al carrito */}
             <AddToCartButton 
               product={product}
               selectedColor={selectedColor}
@@ -260,7 +240,6 @@ export function ProductDetail({ id: propId }) {
         </div>
       </div>
       
-      {/* Botón de volver a la tienda */}
       <div className="back-to-store">
         <button 
           onClick={navigateToHome}

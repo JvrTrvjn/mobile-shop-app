@@ -1,16 +1,8 @@
-/**
- * API Service
- * 
- * This module contains functions to interact with the backend API.
- * All API requests are processed through these functions to centralize
- * error handling and API response formatting.
- */
-
 const API_URL = 'https://itx-frontend-test.onrender.com';
 
 /**
- * Fetches all products from the API
- * @returns {Promise<Array>} Promise that resolves to an array of products
+ * Trae todos los productos de la API
+ * @returns {Promise<Array>} Promisa que devuelve el array de productos
  */
 export const getProducts = async () => {
   try {
@@ -22,43 +14,36 @@ export const getProducts = async () => {
     
     return await response.json();
   } catch (error) {
-    console.error('Error in getProducts:', error);
     throw error;
   }
 };
 
 /**
- * Fetches a specific product by ID
- * @param {string|number} productId - The ID of the product to fetch
- * @returns {Promise<Object>} Promise that resolves to the product details
+ * Trae el producto por ID de la API
+ * @param {string|number} productId - El ID del producto que traer
+ * @returns {Promise<Object>} Promisa que retorna el detalle del producto
  */
 export const getProductDetails = async (productId) => {
   try {
-    console.log(`Making API request to: ${API_URL}/api/product/${productId}`);
-    
     const response = await fetch(`${API_URL}/api/product/${productId}`);
     
     if (!response.ok) {
-      console.error(`API error status: ${response.status} ${response.statusText}`);
-      throw new Error(`Error fetching product details: ${response.statusText}`);
+      throw new Error(`Error detalle producto API: ${response.statusText}`);
     }
     
-    const data = await response.json();
-    console.log('Raw API response data:', data);
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error(`Error in getProductDetails for ID ${productId}:`, error);
     throw error;
   }
 };
 
 /**
- * Adds a product to the cart
- * @param {Object} productData - Object containing product information
- * @param {string|number} productData.id - Product ID
- * @param {string|number} productData.colorCode - Selected color code
- * @param {string|number} productData.storageCode - Selected storage code
- * @returns {Promise<Object>} Promise that resolves to the cart count
+ * Adiciona el producto al carro
+ * @param {Object} productData - Objeto que contiene la informacion del producto
+ * @param {string|number} productData.id - Producto ID
+ * @param {string|number} productData.colorCode - Seleccionar codigo de color
+ * @param {string|number} productData.storageCode - Seleccionar almacenamiento de codigo
+ * @returns {Promise<Object>} Promesa que retorna el contador del carro
  */
 export const addToCart = async (productData) => {
   try {
@@ -71,12 +56,11 @@ export const addToCart = async (productData) => {
     });
     
     if (!response.ok) {
-      throw new Error(`Error adding product to cart: ${response.statusText}`);
+      throw new Error(`Error al adicionar producto al carro: ${response.statusText}`);
     }
     
     return await response.json();
   } catch (error) {
-    console.error('Error in addToCart:', error);
     throw error;
   }
 };

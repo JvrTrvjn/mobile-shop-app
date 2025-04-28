@@ -17,7 +17,6 @@ export function Home() {
         const data = await fetchProducts();
         setProducts(data);
       } catch (err) {
-        console.error('Error loading products:', err);
         setError('Error al cargar los productos');
       } finally {
         setLoading(false);
@@ -27,7 +26,6 @@ export function Home() {
     loadProducts();
   }, []);
 
-  // Filtrar productos basado en el término de búsqueda
   const filteredProducts = products.filter(product => {
     const searchTermLower = searchTerm.toLowerCase();
     return (

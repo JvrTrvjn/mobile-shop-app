@@ -3,7 +3,6 @@ import { useLocation } from 'preact-iso'
 export function NotFound() {
   const location = useLocation()
   
-  // Función para navegar programáticamente
   const navigate = (path) => {
     location.route(path)
   }

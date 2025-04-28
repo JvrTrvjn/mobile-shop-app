@@ -54,7 +54,6 @@
   margin-left: 20px;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .breadcrumb-container {
     display: none;
