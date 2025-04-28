@@ -14,7 +14,7 @@ const CartActionTypes = {
   UPDATE_QUANTITY: 'UPDATE_QUANTITY',
   CLEAR_CART: 'CLEAR_CART',
   INITIALIZE_CART: 'INITIALIZE_CART',
-  SYNC_CART_COUNT: 'SYNC_CART_COUNT', // Nuevo tipo de acción para sincronizar con el contador del servidor
+  SYNC_CART_COUNT: 'SYNC_CART_COUNT', 
 }
 
 const cartReducer = (state, action) => {
@@ -168,7 +168,6 @@ export function CartProvider({ children }) {
 
         const response = await addProductToCart(cartData)
 
-      
         if (response && typeof response.count === 'number' && response.count >= cartState.count) {
           updateCartCount(response.count)
 

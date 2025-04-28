@@ -4,6 +4,7 @@ import { fetchProductDetails } from '../../services/productService'
 import { ColorSelector } from '../../components/ColorSelector/index.jsx'
 import { StorageSelector } from '../../components/StorageSelector/index.jsx'
 import { AddToCartButton } from '../../components/AddToCartButton/index.jsx'
+import logger from '../../utils/logger'
 import './style.css'
 
 /**
@@ -35,7 +36,7 @@ export function ProductDetail({ id: propId }) {
 
   const productId = propId || extractIdFromUrl()
 
-  console.log('Product ID being used:', productId)
+  logger.log('Product ID being used:', productId)
 
   useEffect(() => {
     const loadProductDetails = async () => {
@@ -47,7 +48,7 @@ export function ProductDetail({ id: propId }) {
 
       try {
         const productData = await fetchProductDetails(productId)
-        console.log('Product data received:', productData)
+        logger.log('Product data received:', productData)
 
         if (!productData) {
           throw new Error('No se recibieron datos del producto')
@@ -60,7 +61,7 @@ export function ProductDetail({ id: propId }) {
           productData.options.colors &&
           productData.options.colors.length > 0
         ) {
-          console.log(
+          logger.log(
             'Setting default color from options.colors array:',
             productData.options.colors[0]
           )
@@ -72,14 +73,14 @@ export function ProductDetail({ id: propId }) {
           productData.options.storages &&
           productData.options.storages.length > 0
         ) {
-          console.log(
+          logger.log(
             'Setting default storage from options.storages array:',
             productData.options.storages[0]
           )
           setSelectedStorage(String(productData.options.storages[0].code))
         }
       } catch (err) {
-        console.error('Error loading product details:', err)
+        logger.error('Error loading product details:', err)
         setError(`Error al cargar los detalles del producto: ${err.message}`)
       } finally {
         setLoading(false)
@@ -90,12 +91,12 @@ export function ProductDetail({ id: propId }) {
   }, [productId])
 
   const handleColorSelect = colorCode => {
-    console.log('Color selected:', colorCode)
+    logger.log('Color selected:', colorCode)
     setSelectedColor(colorCode)
   }
 
   const handleStorageSelect = storageCode => {
-    console.log('Storage selected:', storageCode)
+    logger.log('Storage selected:', storageCode)
     setSelectedStorage(storageCode)
   }
 

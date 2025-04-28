@@ -5,20 +5,21 @@ import { ProductDetail } from './pages/ProductDetail/index.jsx'
 import { NotFound } from './pages/_404.jsx'
 import { Header } from './components/Header/index.jsx'
 import { CartProvider } from './context/CartContext.jsx'
+import logger from './utils/logger'
 import './style.css'
 
 export function App() {
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : ''
-  console.log('Current path:', currentPath)
+  logger.log('Current path:', currentPath)
 
   const isProductDetail = currentPath.startsWith('/product/')
-  console.log('Is product detail page:', isProductDetail)
+  logger.log('Is product detail page:', isProductDetail)
 
   let productId = null
   if (isProductDetail) {
     const match = currentPath.match(/\/product\/([^/]+)/)
     productId = match ? match[1] : null
-    console.log('Product ID from URL:', productId)
+    logger.log('Product ID from URL:', productId)
   }
 
   return (
@@ -32,9 +33,9 @@ export function App() {
               <Route
                 path="/product/:id"
                 component={props => {
-                  console.log('Router props:', props)
+                  logger.log('Router props:', props)
                   const id = props.matches?.id || productId
-                  console.log('Using product ID:', id)
+                  logger.log('Using product ID:', id)
                   return <ProductDetail id={id} />
                 }}
               />
