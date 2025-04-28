@@ -1,5 +1,5 @@
 import { useLocation } from 'preact-iso'
-import { useEffect, useState } from 'preact/hooks'
+import { useEffect, useState, useCallback } from 'preact/hooks'
 import { fetchProductDetails } from '../../services/productService'
 import { ColorSelector } from '../../components/ColorSelector/index.jsx'
 import { StorageSelector } from '../../components/StorageSelector/index.jsx'
@@ -23,20 +23,21 @@ export function ProductDetail({ id: propId }) {
   const [selectedColor, setSelectedColor] = useState('')
   const [selectedStorage, setSelectedStorage] = useState('')
 
-  const navigateToHome = () => {
+  const navigateToHome = useCallback(() => {
     location.route('/')
-  }
+  }, [location])
 
-  const extractIdFromUrl = () => {
+  const extractIdFromUrl = useCallback(() => {
     const pathname = typeof location.url === 'string' ? location.url : window.location.pathname
 
     const match = pathname.match(/\/product\/([^/]+)/)
     return match ? match[1] : null
-  }
+  }, [location])
 
   const productId = propId || extractIdFromUrl()
 
-  logger.log('Product ID being used:', productId)
+  // eslint-disable-next-line no-console
+  console.log('Product ID being used:', productId)
 
   useEffect(() => {
     const loadProductDetails = async () => {
@@ -48,7 +49,8 @@ export function ProductDetail({ id: propId }) {
 
       try {
         const productData = await fetchProductDetails(productId)
-        logger.log('Product data received:', productData)
+        // eslint-disable-next-line no-console
+        console.log('Product data received:', productData)
 
         if (!productData) {
           throw new Error('No se recibieron datos del producto')
@@ -61,7 +63,8 @@ export function ProductDetail({ id: propId }) {
           productData.options.colors &&
           productData.options.colors.length > 0
         ) {
-          logger.log(
+          // eslint-disable-next-line no-console
+          console.log(
             'Setting default color from options.colors array:',
             productData.options.colors[0]
           )
@@ -73,14 +76,16 @@ export function ProductDetail({ id: propId }) {
           productData.options.storages &&
           productData.options.storages.length > 0
         ) {
-          logger.log(
+          // eslint-disable-next-line no-console
+          console.log(
             'Setting default storage from options.storages array:',
             productData.options.storages[0]
           )
           setSelectedStorage(String(productData.options.storages[0].code))
         }
       } catch (err) {
-        logger.error('Error loading product details:', err)
+        // eslint-disable-next-line no-console
+        console.error('Error loading product details:', err)
         setError(`Error al cargar los detalles del producto: ${err.message}`)
       } finally {
         setLoading(false)
@@ -90,15 +95,17 @@ export function ProductDetail({ id: propId }) {
     loadProductDetails()
   }, [productId])
 
-  const handleColorSelect = colorCode => {
-    logger.log('Color selected:', colorCode)
+  const handleColorSelect = useCallback(colorCode => {
+    // eslint-disable-next-line no-console
+    console.log('Color selected:', colorCode)
     setSelectedColor(colorCode)
-  }
+  }, [])
 
-  const handleStorageSelect = storageCode => {
-    logger.log('Storage selected:', storageCode)
+  const handleStorageSelect = useCallback(storageCode => {
+    // eslint-disable-next-line no-console
+    console.log('Storage selected:', storageCode)
     setSelectedStorage(storageCode)
-  }
+  }, [])
 
   if (loading) {
     return (
@@ -250,7 +257,6 @@ export function ProductDetail({ id: propId }) {
           </div>
         </div>
       </div>
-
       <div className="back-to-store">
         <button onClick={navigateToHome} className="back-button">
           ← Volver a la tienda
