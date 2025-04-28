@@ -35,7 +35,7 @@ export const fetchProductDetails = async (productId) => {
     throw new Error('Invalid product ID');
   }
   
-  const cacheKey = getCacheKey('product', productId);
+  const cacheKey = getCacheKey('product', String(productId));
   const cachedProduct = getFromCache(cacheKey);
   
   if (cachedProduct) {

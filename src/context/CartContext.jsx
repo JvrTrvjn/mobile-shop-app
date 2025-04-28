@@ -13,7 +13,8 @@ const CartActionTypes = {
   REMOVE_FROM_CART: 'REMOVE_FROM_CART',
   UPDATE_QUANTITY: 'UPDATE_QUANTITY',
   CLEAR_CART: 'CLEAR_CART',
-  INITIALIZE_CART: 'INITIALIZE_CART'
+  INITIALIZE_CART: 'INITIALIZE_CART',
+  SYNC_CART_COUNT: 'SYNC_CART_COUNT' // Nuevo tipo de acción para sincronizar con el contador del servidor
 };
 
 const cartReducer = (state, action) => {
@@ -67,6 +68,7 @@ const cartReducer = (state, action) => {
       
       window.dispatchEvent(new CustomEvent('cartUpdated'));
       
+      // Actualizamos localStorage directamente aquí porque no hay una llamada a la API después
       updateCartCount(newCount);
       
       return {
@@ -90,6 +92,7 @@ const cartReducer = (state, action) => {
       
       window.dispatchEvent(new CustomEvent('cartUpdated'));
       
+      // Actualizamos localStorage directamente aquí porque no hay una llamada a la API después
       updateCartCount(newCount);
       
       return {
@@ -111,6 +114,13 @@ const cartReducer = (state, action) => {
     }
     
     case CartActionTypes.INITIALIZE_CART: {
+      return {
+        ...state,
+        count: action.payload.count
+      };
+    }
+    
+    case CartActionTypes.SYNC_CART_COUNT: {
       return {
         ...state,
         count: action.payload.count
@@ -152,21 +162,28 @@ export function CartProvider({ children }) {
           storageCode: storageCode
         };
         
-        const response = await addProductToCart(cartData);
-        
-        if (response && typeof response.count === 'number') {
-          updateCartCount(response.count);
-          
-          dispatch({
-            type: CartActionTypes.INITIALIZE_CART,
-            payload: { count: response.count }
-          });
-        }
-        
+        // Realizamos la adición al carrito localmente primero
         dispatch({
           type: CartActionTypes.ADD_TO_CART,
           payload: { product, quantity, selectedColor, selectedStorage }
         });
+        
+        // Luego sincronizamos con la API
+        const response = await addProductToCart(cartData);
+        
+        // Validamos si la respuesta de la API parece ser correcta
+        // Si count es >= a nuestro contador local, lo usamos
+        if (response && 
+            typeof response.count === 'number' && 
+            response.count >= cartState.count) {
+          
+          updateCartCount(response.count);
+          
+          dispatch({
+            type: CartActionTypes.SYNC_CART_COUNT,
+            payload: { count: response.count }
+          });
+        }
         
         return response;
       } catch (error) {
