@@ -14,7 +14,11 @@ export const getProducts = async () => {
 
     return await response.json()
   } catch (error) {
-    throw error
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error al obtener productos:', error)
+    }
+
+    throw new Error('No se pudieron cargar los productos. Intenta más tarde.')
   }
 }
 
@@ -33,7 +37,11 @@ export const getProductDetails = async productId => {
 
     return await response.json()
   } catch (error) {
-    throw error
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(`Error al obtener detalles del producto ${productId}:`, error)
+    }
+
+    throw new Error('No se pudo cargar la información del producto. Intenta más tarde.')
   }
 }
 
@@ -61,6 +69,10 @@ export const addToCart = async productData => {
 
     return await response.json()
   } catch (error) {
-    throw error
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error al añadir producto al carrito:', error)
+    }
+
+    throw new Error('No se pudo añadir el producto al carrito. Intenta más tarde.')
   }
 }

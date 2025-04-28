@@ -1,4 +1,3 @@
-import { useState } from 'preact/hooks'
 import './style.css'
 
 /**

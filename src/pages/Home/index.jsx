@@ -1,11 +1,9 @@
-import { useLocation } from 'preact-iso'
 import { useEffect, useState } from 'preact/hooks'
 import { fetchProducts } from '../../services/productService'
 import { ProductCard } from '../../components/ProductCard/index.jsx'
 import './style.css'
 
 export function Home() {
-  const location = useLocation()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)

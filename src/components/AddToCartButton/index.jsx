@@ -27,14 +27,7 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
     setError(null)
 
     try {
-      const selectedColorObj = product.options?.colors?.find(
-        c => String(c.code) === String(selectedColor)
-      )
-      const selectedStorageObj = product.options?.storages?.find(
-        s => String(s.code) === String(selectedStorage)
-      )
-
-      const response = await addToCart(product, quantity, selectedColor, selectedStorage)
+      await addToCart(product, quantity, selectedColor, selectedStorage)
 
       setAddSuccess(true)
 

@@ -132,8 +132,6 @@ export function ProductDetail({ id: propId }) {
     )
   }
 
-  const currentPathname = typeof location.url === 'string' ? location.url : window.location.pathname
-
   const colorOptions = product.options?.colors || []
   const storageOptions = product.options?.storages || []
 

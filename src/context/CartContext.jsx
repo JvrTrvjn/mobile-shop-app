@@ -69,7 +69,6 @@ const cartReducer = (state, action) => {
 
       window.dispatchEvent(new CustomEvent('cartUpdated'))
 
-      // Actualizamos localStorage directamente aquí porque no hay una llamada a la API después
       updateCartCount(newCount)
 
       return {
@@ -93,7 +92,6 @@ const cartReducer = (state, action) => {
 
       window.dispatchEvent(new CustomEvent('cartUpdated'))
 
-      // Actualizamos localStorage directamente aquí porque no hay una llamada a la API después
       updateCartCount(newCount)
 
       return {
@@ -163,17 +161,14 @@ export function CartProvider({ children }) {
           storageCode,
         }
 
-        // Realizamos la adición al carrito localmente primero
         dispatch({
           type: CartActionTypes.ADD_TO_CART,
           payload: { product, quantity, selectedColor, selectedStorage },
         })
 
-        // Luego sincronizamos con la API
         const response = await addProductToCart(cartData)
 
-        // Validamos si la respuesta de la API parece ser correcta
-        // Si count es >= a nuestro contador local, lo usamos
+      
         if (response && typeof response.count === 'number' && response.count >= cartState.count) {
           updateCartCount(response.count)
 
@@ -185,7 +180,11 @@ export function CartProvider({ children }) {
 
         return response
       } catch (error) {
-        throw error
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Error detallado en addToCart:', error)
+        }
+
+        throw new Error('No se pudo añadir el producto al carrito. Inténtalo de nuevo.')
       }
     },
     removeFromCart: itemIndex => {
@@ -208,7 +207,6 @@ export function CartProvider({ children }) {
   return <CartContext.Provider value={cartContextValue}>{children}</CartContext.Provider>
 }
 
-// Custom hook for using cart context
 export const useCart = () => {
   const context = useContext(CartContext)
   if (!context) {

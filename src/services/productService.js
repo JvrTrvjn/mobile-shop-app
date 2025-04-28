@@ -20,7 +20,11 @@ export const fetchProducts = async () => {
 
     return products
   } catch (error) {
-    throw error
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error al recuperar los productos:', error)
+    }
+
+    throw new Error('No se pudieron cargar los productos. Intenta más tarde.')
   }
 }
 
@@ -48,7 +52,11 @@ export const fetchProductDetails = async productId => {
 
     return product
   } catch (error) {
-    throw error
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(`Error al obtener los detalles del producto ${productId}:`, error)
+    }
+
+    throw new Error('No se pudo cargar la información del producto. Intenta más tarde.')
   }
 }
 
@@ -61,7 +69,11 @@ export const addProductToCart = async productData => {
   try {
     return await addToCart(productData)
   } catch (error) {
-    throw error
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error al añadir producto al carrito:', error)
+    }
+
+    throw new Error('No se pudo añadir el producto al carrito. Intenta más tarde.')
   }
 }
 
@@ -74,6 +86,10 @@ export const getCartCount = () => {
     const count = localStorage.getItem('cartCount')
     return count ? parseInt(count, 10) : 0
   } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error al obtener la cantidad del carrito:', error)
+    }
+
     return 0
   }
 }
@@ -86,6 +102,10 @@ export const updateCartCount = count => {
   try {
     localStorage.setItem('cartCount', count.toString())
   } catch (error) {
-    throw error
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error al actualizar la cantidad del carrito:', error)
+    }
+
+    throw new Error('No se pudo actualizar la cantidad en el carrito. Intenta más tarde.')
   }
 }
