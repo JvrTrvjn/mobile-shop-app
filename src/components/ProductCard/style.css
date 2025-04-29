@@ -68,13 +68,19 @@
   background-color: var(--color-primary);
   color: white;
   border: none;
-  border-radius: var(--border-radius-sm);
+  border-radius: 15px; /* Aumentar el border radius */
   padding: var(--spacing-sm) var(--spacing-md);
   cursor: pointer;
   font-size: var(--font-size-xs);
-  transition: background-color var(--transition-fast);
+  transition: background-color var(--transition-fast), opacity var(--transition-fast);
+  max-width: 80%; /* Reducir el ancho del botón */
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0; /* Inicialmente oculto */
+  transform: translateY(10px);
 }
 
-.product-detail-button:hover {
-  background-color: var(--color-primary-dark);
+.product-card:hover .product-detail-button {
+  opacity: 1; /* Se muestra cuando se hace hover en la tarjeta */
+  transform: translateY(0);
 }
