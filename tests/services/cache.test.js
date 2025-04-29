@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { getFromCache, saveToCache, getCacheKey, clearCache } from '../../src/services/cache';
 
 describe('Cache Service', () => {
-  // Mock localStorage
   const localStorageMock = (() => {
     let store = {};
     return {
@@ -26,14 +25,11 @@ describe('Cache Service', () => {
     };
   })();
 
-  // Replace global localStorage with mock
   global.localStorage = localStorageMock;
 
   beforeEach(() => {
-    // Clear all mocks before each test
     localStorageMock.clear();
     vi.clearAllMocks();
-    // Mock Date.now to control time
     vi.spyOn(Date, 'now').mockImplementation(() => 1000);
   });
 
@@ -46,16 +42,14 @@ describe('Cache Service', () => {
     expect(callArgs[0]).toBe('testKey');
     const savedData = JSON.parse(callArgs[1]);
     expect(savedData.data).toEqual(testData);
-    // Should expire in 1 hour (3600000 ms)
     expect(savedData.expiry).toBe(Date.now() + 60 * 60 * 1000);
   });
 
   it('should retrieve valid data from cache', () => {
-    // Setup valid cached data
     const testData = { test: 'value' };
     const cachedItem = {
       data: testData,
-      expiry: Date.now() + 10000 // Not expired yet
+      expiry: Date.now() + 10000 
     };
     localStorageMock.getItem.mockReturnValueOnce(JSON.stringify(cachedItem));
 
@@ -66,10 +60,9 @@ describe('Cache Service', () => {
   });
 
   it('should return null for expired data and remove it', () => {
-    // Setup expired cached data
     const cachedItem = {
       data: { test: 'expired' },
-      expiry: Date.now() - 1000 // Already expired
+      expiry: Date.now() - 1000 
     };
     localStorageMock.getItem.mockReturnValueOnce(JSON.stringify(cachedItem));
 
@@ -93,17 +86,18 @@ describe('Cache Service', () => {
       'other_app_key': 'data'
     };
     
-    localStorageMock.length = Object.keys(mockLocalStorage).length;
-    let index = 0;
-    for (const key in mockLocalStorage) {
-      localStorageMock.key.mockReturnValueOnce(key);
-      localStorageMock.getItem.mockReturnValueOnce(mockLocalStorage[key]);
-      index++;
-    }
+    const keys = Object.keys(mockLocalStorage);
+    localStorageMock.key.mockImplementation((index) => keys[index] || null);
+    Object.defineProperty(localStorageMock, 'length', {
+      get: () => keys.length
+    });
+    
+    keys.forEach(key => {
+      localStorageMock.getItem.mockImplementationOnce(() => mockLocalStorage[key]);
+    });
 
     clearCache();
 
-    // Should remove product-related keys only
     expect(localStorageMock.removeItem).toHaveBeenCalledWith('products');
     expect(localStorageMock.removeItem).toHaveBeenCalledWith('product_123');
     expect(localStorageMock.removeItem).not.toHaveBeenCalledWith('other_app_key');

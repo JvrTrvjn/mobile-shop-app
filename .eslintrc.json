@@ -7,24 +7,34 @@
   "extends": [
     "eslint:recommended",
     "plugin:preact/recommended",
-    "plugin:preact-hooks/recommended",
+    "plugin:react-hooks/recommended",
     "plugin:prettier/recommended"
   ],
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
     },
     "ecmaVersion": "latest",
-    "sourceType": "module"
+    "sourceType": "module",
+    "requireConfigFile": false,
+    "babelOptions": {
+      "presets": ["@babel/preset-react"]
+    }
   },
-  "plugins": ["preact"],
+  "plugins": ["preact", "react-hooks"],
   "rules": {
     "no-unused-vars": "warn",
-    "preact/no-unknown-element": "error",
-    "prettier/prettier": ["error", { "singleQuote": true, "semi": false }]
+    "prettier/prettier": ["error", { "singleQuote": true, "semi": false }],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "settings": {
     "preact": {
+      "version": "detect"
+    },
+    "react": {
+      "pragma": "h",
       "version": "detect"
     }
   }

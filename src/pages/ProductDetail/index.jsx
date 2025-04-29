@@ -1,160 +1,157 @@
-import { useLocation } from 'preact-iso';
-import { useEffect, useState } from 'preact/hooks';
-import { fetchProductDetails } from '../../services/productService';
-import { ColorSelector } from '../../components/ColorSelector/index.jsx';
-import { StorageSelector } from '../../components/StorageSelector/index.jsx';
-import { AddToCartButton } from '../../components/AddToCartButton/index.jsx';
-import './style.css';
+import { useLocation } from 'preact-iso'
+import { useEffect, useState, useCallback } from 'preact/hooks'
+import { fetchProductDetails } from '../../services/productService'
+import { ColorSelector } from '../../components/ColorSelector/index.jsx'
+import { StorageSelector } from '../../components/StorageSelector/index.jsx'
+import { AddToCartButton } from '../../components/AddToCartButton/index.jsx'
+import logger from '../../utils/logger'
+import './style.css'
 
 /**
  * Componente de detalle de producto (PDP - Product Details Page)
  * Muestra la información detallada de un producto y permite añadirlo al carrito
- * 
+ *
  * @param {Object} props - Propiedades del componente
  * @param {string} props.id - ID del producto a mostrar (opcional, también puede extraerse de la URL)
- * @returns {JSX.Element} Componente ProductDetail
+ * @returns {Object} Componente ProductDetail
  */
 export function ProductDetail({ id: propId }) {
-  const location = useLocation();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedColor, setSelectedColor] = useState('');
-  const [selectedStorage, setSelectedStorage] = useState('');
-  
-  // Función para navegar programáticamente
-  const navigateToHome = () => {
-    location.route('/');
-  };
-  
-  // Obtener el ID del producto desde las props o la URL
-  const extractIdFromUrl = () => {
-    const pathname = typeof location.url === 'string'
-      ? location.url
-      : window.location.pathname;
-      
-    const match = pathname.match(/\/product\/([^/]+)/);
-    return match ? match[1] : null;
-  };
-  
-  // Obtener el ID del producto de manera más robusta
-  const productId = propId || extractIdFromUrl();
-  
-  console.log('Product ID being used:', productId);
+  const location = useLocation()
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [selectedColor, setSelectedColor] = useState('')
+  const [selectedStorage, setSelectedStorage] = useState('')
 
-  // Cargar los detalles del producto cuando el componente se monta o cambia el ID
+  const navigateToHome = useCallback(() => {
+    location.route('/')
+  }, [location])
+
+  const extractIdFromUrl = useCallback(() => {
+    const pathname = typeof location.url === 'string' ? location.url : window.location.pathname
+
+    const match = pathname.match(/\/product\/([^/]+)/)
+    return match ? match[1] : null
+  }, [location])
+
+  const productId = propId || extractIdFromUrl()
+
+  // eslint-disable-next-line no-console
+  console.log('Product ID being used:', productId)
+
   useEffect(() => {
     const loadProductDetails = async () => {
       if (!productId) {
-        setError('ID de producto no válido');
-        setLoading(false);
-        return;
+        setError('ID de producto no válido')
+        setLoading(false)
+        return
       }
-      
+
       try {
-        const productData = await fetchProductDetails(productId);
-        console.log('Product data received:', productData);
-        
+        const productData = await fetchProductDetails(productId)
+        // eslint-disable-next-line no-console
+        console.log('Product data received:', productData)
+
         if (!productData) {
-          throw new Error('No se recibieron datos del producto');
+          throw new Error('No se recibieron datos del producto')
         }
-        
-        setProduct(productData);
-        
-        // Establecer valores por defecto para colores y almacenamiento
-        // Usar la estructura correcta options.colors y options.storages
-        if (productData.options && productData.options.colors && productData.options.colors.length > 0) {
-          console.log('Setting default color from options.colors array:', productData.options.colors[0]);
-          setSelectedColor(String(productData.options.colors[0].code));
+
+        setProduct(productData)
+
+        if (
+          productData.options &&
+          productData.options.colors &&
+          productData.options.colors.length > 0
+        ) {
+          // eslint-disable-next-line no-console
+          console.log(
+            'Setting default color from options.colors array:',
+            productData.options.colors[0]
+          )
+          setSelectedColor(String(productData.options.colors[0].code))
         }
-        
-        if (productData.options && productData.options.storages && productData.options.storages.length > 0) {
-          console.log('Setting default storage from options.storages array:', productData.options.storages[0]);
-          setSelectedStorage(String(productData.options.storages[0].code));
+
+        if (
+          productData.options &&
+          productData.options.storages &&
+          productData.options.storages.length > 0
+        ) {
+          // eslint-disable-next-line no-console
+          console.log(
+            'Setting default storage from options.storages array:',
+            productData.options.storages[0]
+          )
+          setSelectedStorage(String(productData.options.storages[0].code))
         }
       } catch (err) {
-        console.error('Error loading product details:', err);
-        setError(`Error al cargar los detalles del producto: ${err.message}`);
+        // eslint-disable-next-line no-console
+        console.error('Error loading product details:', err)
+        setError(`Error al cargar los detalles del producto: ${err.message}`)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    
-    loadProductDetails();
-  }, [productId]);
+    }
 
-  // Manejadores para selección de color y almacenamiento
-  const handleColorSelect = (colorCode) => {
-    console.log('Color selected:', colorCode);
-    setSelectedColor(colorCode);
-  };
-  
-  const handleStorageSelect = (storageCode) => {
-    console.log('Storage selected:', storageCode);
-    setSelectedStorage(storageCode);
-  };
+    loadProductDetails()
+  }, [productId])
 
-  // Renderizar pantalla de carga
+  const handleColorSelect = useCallback(colorCode => {
+    // eslint-disable-next-line no-console
+    console.log('Color selected:', colorCode)
+    setSelectedColor(colorCode)
+  }, [])
+
+  const handleStorageSelect = useCallback(storageCode => {
+    // eslint-disable-next-line no-console
+    console.log('Storage selected:', storageCode)
+    setSelectedStorage(storageCode)
+  }, [])
+
   if (loading) {
     return (
       <div className="product-detail-container loading">
-        <div className="loading-spinner"></div>
+        <div className="loading-spinner" />
         <p className="loading-text">Cargando detalles del producto...</p>
       </div>
-    );
+    )
   }
 
-  // Renderizar pantalla de error
   if (error) {
     return (
       <div className="product-detail-container error">
         <div className="error-icon">!</div>
         <p className="error-message">{error}</p>
-        <button 
-          onClick={navigateToHome}
-          className="back-button"
-        >
+        <button onClick={navigateToHome} className="back-button">
           Volver a la tienda
         </button>
       </div>
-    );
+    )
   }
 
-  // Si no hay producto, no renderizar nada
   if (!product) {
     return (
       <div className="product-detail-container error">
         <div className="error-icon">!</div>
         <p className="error-message">No se encontró información del producto</p>
-        <button 
-          onClick={navigateToHome}
-          className="back-button"
-        >
+        <button onClick={navigateToHome} className="back-button">
           Volver a la tienda
         </button>
       </div>
-    );
+    )
   }
 
-  // El pathname actual para usar en breadcrumbs o cualquier otra navegación
-  const currentPathname = typeof location.url === 'string' 
-    ? location.url 
-    : window.location.pathname;
-
-  // Asegurarse de que tenemos las opciones de colores y almacenamiento
-  const colorOptions = product.options?.colors || [];
-  const storageOptions = product.options?.storages || [];
+  const colorOptions = product.options?.colors || []
+  const storageOptions = product.options?.storages || []
 
   return (
     <div className="product-detail-container">
       <div className="product-detail-content">
-        {/* Primera columna - Imagen del producto */}
         <div className="product-image-column">
           <div className="product-image-container">
             {product.imgUrl ? (
-              <img 
-                src={product.imgUrl} 
-                alt={`${product.brand} ${product.model}`} 
+              <img
+                src={product.imgUrl}
+                alt={`${product.brand} ${product.model}`}
                 className="product-image"
               />
             ) : (
@@ -164,18 +161,17 @@ export function ProductDetail({ id: propId }) {
             )}
           </div>
         </div>
-        
-        {/* Segunda columna - Detalles y acciones del producto */}
+
         <div className="product-info-column">
-          {/* Descripción del producto */}
           <div className="product-header">
-            <h1 className="product-title">{product.brand} {product.model}</h1>
+            <h1 className="product-title">
+              {product.brand} {product.model}
+            </h1>
             <div className="product-price">
               {product.price ? `${product.price}€` : 'Precio no disponible'}
             </div>
           </div>
-          
-          {/* Especificaciones del producto */}
+
           <div className="product-specs">
             <h2 className="specs-title">Especificaciones</h2>
             <div className="specs-grid">
@@ -193,7 +189,9 @@ export function ProductDetail({ id: propId }) {
               </div>
               <div className="spec-item">
                 <span className="spec-label">Resolución:</span>
-                <span className="spec-value">{product.displaySize || product.display?.size || 'No especificado'}</span>
+                <span className="spec-value">
+                  {product.displaySize || product.display?.size || 'No especificado'}
+                </span>
               </div>
               <div className="spec-item">
                 <span className="spec-label">Batería:</span>
@@ -202,32 +200,34 @@ export function ProductDetail({ id: propId }) {
               <div className="spec-item">
                 <span className="spec-label">Cámaras:</span>
                 <span className="spec-value">
-                  {Array.isArray(product.primaryCamera) 
-                    ? product.primaryCamera.join(', ') 
-                    : (product.primaryCamera || 'No especificado')}
+                  {Array.isArray(product.primaryCamera)
+                    ? product.primaryCamera.join(', ')
+                    : product.primaryCamera || 'No especificado'}
                 </span>
               </div>
               <div className="spec-item">
                 <span className="spec-label">Dimensiones:</span>
-                <span className="spec-value">{product.dimentions || product.dimensions || 'No especificado'}</span>
+                <span className="spec-value">
+                  {product.dimentions || product.dimensions || 'No especificado'}
+                </span>
               </div>
               <div className="spec-item">
                 <span className="spec-label">Peso:</span>
-                <span className="spec-value">{product.weight ? `${product.weight} g` : 'No especificado'}</span>
+                <span className="spec-value">
+                  {product.weight ? `${product.weight} g` : 'No especificado'}
+                </span>
               </div>
             </div>
           </div>
-          
-          {/* Acciones del producto - Selectores y botón */}
+
           <div className="product-actions">
             <h2 className="actions-title">Selecciona las opciones</h2>
-            
-            {/* Selector de colores */}
+
             <div className="option-selector">
               <h3 className="selector-label">Color:</h3>
               {colorOptions.length > 0 ? (
-                <ColorSelector 
-                  colors={colorOptions} 
+                <ColorSelector
+                  colors={colorOptions}
                   selectedColor={selectedColor}
                   onColorSelect={handleColorSelect}
                 />
@@ -235,13 +235,12 @@ export function ProductDetail({ id: propId }) {
                 <div className="no-options">No hay opciones de color disponibles</div>
               )}
             </div>
-            
-            {/* Selector de almacenamiento */}
+
             <div className="option-selector">
               <h3 className="selector-label">Almacenamiento:</h3>
               {storageOptions.length > 0 ? (
-                <StorageSelector 
-                  options={storageOptions} 
+                <StorageSelector
+                  options={storageOptions}
                   selectedStorage={selectedStorage}
                   onStorageSelect={handleStorageSelect}
                 />
@@ -249,9 +248,8 @@ export function ProductDetail({ id: propId }) {
                 <div className="no-options">No hay opciones de almacenamiento disponibles</div>
               )}
             </div>
-            
-            {/* Botón de añadir al carrito */}
-            <AddToCartButton 
+
+            <AddToCartButton
               product={product}
               selectedColor={selectedColor}
               selectedStorage={selectedStorage}
@@ -259,16 +257,11 @@ export function ProductDetail({ id: propId }) {
           </div>
         </div>
       </div>
-      
-      {/* Botón de volver a la tienda */}
       <div className="back-to-store">
-        <button 
-          onClick={navigateToHome}
-          className="back-button"
-        >
+        <button onClick={navigateToHome} className="back-button">
           ← Volver a la tienda
         </button>
       </div>
     </div>
-  );
+  )
 }

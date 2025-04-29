@@ -1,4 +1,3 @@
-/* Estilos para el botón de añadir al carrito */
 .add-to-cart-container {
   display: flex;
   flex-direction: column;
@@ -6,7 +5,6 @@
   margin-top: 20px;
 }
 
-/* Mensajes de éxito y error */
 .cart-success, .cart-error {
   padding: 10px;
   border-radius: 4px;
@@ -34,7 +32,6 @@
   text-align: center;
 }
 
-/* Controles de cantidad y botón */
 .quantity-selector {
   display: flex;
   align-items: center;

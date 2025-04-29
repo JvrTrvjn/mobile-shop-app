@@ -35,7 +35,6 @@ body {
 	flex: 1;
 }
 
-/* El estilo del header ahora se gestiona desde el componente Header */
 header {
 	width: 100%;
 }

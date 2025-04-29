@@ -1,5 +1,4 @@
-import { useState } from 'preact/hooks';
-import './style.css';
+import './style.css'
 
 /**
  * Selector de color para productos
@@ -11,44 +10,69 @@ import './style.css';
  */
 export function ColorSelector({ colors, onColorSelect, selectedColor }) {
   if (!colors || colors.length === 0) {
-    return null;
+    return null
   }
 
-  // Función para determinar el color CSS según el código
-  const getColorStyle = (colorCode) => {
-    // Mapa de códigos comunes a colores CSS
+  const getColorStyle = (colorCode, colorName) => {
+    // Mapa de nombres comunes de colores a valores CSS
     const colorMap = {
-      1: 'black',
-      2: 'white',
-      3: 'red',
-      4: 'blue',
-      5: 'green',
-      6: 'yellow',
-      7: 'purple',
-      8: 'gray',
-      9: 'silver',
-      10: 'gold'
-    };
-    
-    // Intentar usar el mapa o devolver un color por defecto
-    return colorMap[colorCode] || '#cccccc';
-  };
+      black: 'black',
+      white: 'white',
+      red: 'red',
+      blue: 'blue',
+      green: 'green',
+      yellow: 'yellow',
+      purple: 'purple',
+      gray: 'gray',
+      silver: 'silver',
+      gold: 'gold',
+      burgundy: 'darkred',
+      titan: 'black',
+      navy: 'navy',
+      rose: 'pink',
+      midnight: 'midnightblue',
+      sky: 'skyblue',
+    }
+
+    if (!colorName) return '#cccccc'
+
+    const lowerCaseName = colorName.toLowerCase()
+
+    if (colorMap[lowerCaseName]) {
+      return colorMap[lowerCaseName]
+    }
+
+    const words = lowerCaseName.split(' ')
+    for (const word of words) {
+      if (colorMap[word]) {
+        return colorMap[word]
+      }
+    }
+
+    for (const key of Object.keys(colorMap)) {
+      if (lowerCaseName.includes(key)) {
+        return colorMap[key]
+      }
+    }
+
+    return '#cccccc'
+  }
 
   return (
     <div className="color-selector">
       {colors.map(color => (
-        <div 
-          key={color.code} 
+        <div
+          key={color.code}
           className={`color-option ${selectedColor === color.code.toString() ? 'selected' : ''}`}
           onClick={() => onColorSelect(color.code.toString())}
         >
-          <div 
-            className="color-swatch" 
-            style={{ backgroundColor: getColorStyle(color.code) }}
-          ></div>
-          <span className="color-name">{color.name || `Color ${color.code}`}</span>
+          <div
+            className="color-swatch"
+            style={{ backgroundColor: getColorStyle(color.code, color.name) }}
+          />
+          <span className="color-name">{color.name}</span>
         </div>
       ))}
     </div>
-  );
+  )
 }

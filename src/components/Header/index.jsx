@@ -1,42 +1,39 @@
-import { useLocation } from 'preact-iso';
-import { useEffect, useState } from 'preact/hooks';
-import { CartCounter } from '../CartCounter';
-import './style.css';
+import { useLocation } from 'preact-iso'
+import { useEffect, useState } from 'preact/hooks'
+import { CartCounter } from '../CartCounter'
+import './style.css'
 
 /**
- * Header component that displays the app title, breadcrumbs, and cart count
- * @returns {Object} The Header component
+ * El componente Header que muestra el titulo, breadcrumbs, y contador del carro
+ * @returns {Object} El componente Header
  */
 export function Header() {
-  const location = useLocation();
-  const [currentPath, setCurrentPath] = useState('/');
-  
-  // Update path when location changes
+  const location = useLocation()
+  const [currentPath, setCurrentPath] = useState('/')
+
   useEffect(() => {
-    const pathname = typeof location.url === 'string' 
-      ? location.url 
-      : window.location.pathname;
-      
-    setCurrentPath(pathname);
-  }, [location]);
-  
-  // Function to navigate to home
+    const pathname = typeof location.url === 'string' ? location.url : window.location.pathname
+
+    setCurrentPath(pathname)
+  }, [location])
+
   const navigateToHome = () => {
-    location.route('/');
-  };
-  
+    location.route('/')
+  }
+
   return (
     <header className="app-header">
       <div className="header-content">
         <div className="logo-container" onClick={navigateToHome}>
           <h1 className="app-title">Mobile Shop</h1>
         </div>
-        
+
         <div className="breadcrumb-container">
-          {/* We'll use the Breadcrumb component here */}
           {currentPath !== '/' && (
             <div className="breadcrumb">
-              <span className="breadcrumb-home" onClick={navigateToHome}>Home</span>
+              <span className="breadcrumb-home" onClick={navigateToHome}>
+                Home
+              </span>
               <span className="breadcrumb-separator">/</span>
               <span className="breadcrumb-current">
                 {currentPath.includes('/product/') ? 'Product Details' : 'Not Found'}
@@ -44,11 +41,11 @@ export function Header() {
             </div>
           )}
         </div>
-        
+
         <div className="cart-container">
           <CartCounter />
         </div>
       </div>
     </header>
-  );
+  )
 }
