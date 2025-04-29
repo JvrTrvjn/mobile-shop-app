@@ -37,9 +37,11 @@ export function Header() {
               <span className="breadcrumb-home" onClick={navigateToHome}>
                 {t('header.home')}
               </span>
-              <span className="breadcrumb-separator">/</span>
+              <span className="breadcrumb-separator">&gt;</span>
               <span className="breadcrumb-current">
-                {currentPath.includes('/product/') ? t('ProductDetails') : t('NotFound')}
+                {currentPath.includes('/product/')
+                  ? t('header.ProductDetails')
+                  : t('header.NotFound')}
               </span>
             </div>
           )}

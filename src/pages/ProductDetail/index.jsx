@@ -106,20 +106,20 @@ export function ProductDetail({ id: propId }) {
   const handleRetry = useCallback(() => {
     setError(null)
     setLoading(true)
-    
+
     // Limpiar el caché antes de volver a intentar
     try {
-      clearCache();
-      console.log('Cache cleared successfully');
+      clearCache()
+      console.log('Cache cleared successfully')
     } catch (cacheError) {
-      console.error('Error clearing cache:', cacheError);
+      console.error('Error clearing cache:', cacheError)
     }
-    
+
     const loadProductDetails = async () => {
       try {
-        console.log('Retrying to load product ID:', productId);
+        console.log('Retrying to load product ID:', productId)
         const productData = await fetchProductDetails(productId)
-        console.log('Retry successful, product data:', productData);
+        console.log('Retry successful, product data:', productData)
         setProduct(productData)
         if (productData.options?.colors?.length > 0) {
           setSelectedColor(String(productData.options.colors[0].code))
@@ -128,7 +128,7 @@ export function ProductDetail({ id: propId }) {
           setSelectedStorage(String(productData.options.storages[0].code))
         }
       } catch (err) {
-        console.error('Retry failed:', err);
+        console.error('Retry failed:', err)
         setError(`${t('product.error')}: ${err.message}`)
       } finally {
         setLoading(false)
@@ -155,11 +155,11 @@ export function ProductDetail({ id: propId }) {
           <button onClick={handleRetry} className="retry-button">
             {t('product.tryAgain')}
           </button>
-          <button 
+          <button
             onClick={() => {
-              clearCache();
-              window.location.reload();
-            }} 
+              clearCache()
+              window.location.reload()
+            }}
             className="clear-cache-button"
           >
             Limpiar caché y recargar
