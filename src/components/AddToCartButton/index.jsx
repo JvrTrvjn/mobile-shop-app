@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks'
 import { useCart } from '../../context/CartContext'
 import { useToast } from '../../context/ToastContext'
+import { useTranslation } from '../../context/I18nContext'
 import './style.css'
 
 /**
@@ -16,10 +17,11 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
   const [isAdding, setIsAdding] = useState(false)
   const { addToCart } = useCart()
   const toast = useToast()
+  const { t } = useTranslation()
 
   const handleAddToCart = async () => {
     if (!selectedColor || !selectedStorage) {
-      toast.warning('Por favor, selecciona color y almacenamiento', {
+      toast.warning(t('cart.selectOptions'), {
         toastId: 'selection-warning',
       })
       return
@@ -29,11 +31,11 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
 
     try {
       await addToCart(product, quantity, selectedColor, selectedStorage)
-      toast.success(`¡${product.brand} ${product.model} añadido correctamente!`, {
+      toast.success(`${product.brand} ${product.model} añadido correctamente!`, {
         toastId: `add-success-${product.id}-${selectedColor}-${selectedStorage}`,
       })
     } catch (error) {
-      toast.error(`Error al añadir al carrito: ${error.message}`, {
+      toast.error(t('cart.error'), {
         toastId: `add-error-${product.id}`,
       })
     } finally {
@@ -73,17 +75,18 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
         className={`add-to-cart-btn ${isAdding ? 'adding' : ''} ${!selectedColor || !selectedStorage ? 'disabled' : ''}`}
         onClick={handleAddToCart}
         disabled={isAdding || !selectedColor || !selectedStorage}
+        data-testid="add-to-cart-button"
       >
-        {isAdding ? 'Añadiendo...' : 'Añadir al carrito'}
+        {isAdding ? t('productDetail.adding') : t('productDetail.add')}
       </button>
 
       {(!selectedColor || !selectedStorage) && (
         <div className="selection-reminder">
           {!selectedColor && !selectedStorage
-            ? 'Selecciona color y almacenamiento'
+            ? t('cart.selectOptions')
             : !selectedColor
-              ? 'Selecciona un color'
-              : 'Selecciona almacenamiento'}
+              ? t('cart.selectColor')
+              : t('cart.selectStorage')}
         </div>
       )}
     </div>

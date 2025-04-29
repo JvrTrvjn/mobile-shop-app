@@ -1,7 +1,9 @@
 import { useLocation } from 'preact-iso'
+import { useTranslation } from '../context/I18nContext'
 
 export function NotFound() {
   const location = useLocation()
+  const { t } = useTranslation()
 
   const navigate = path => {
     location.route(path)
@@ -9,8 +11,8 @@ export function NotFound() {
 
   return (
     <div>
-      <h1>404: Not Found</h1>
-      <p>La página que estás buscando no existe.</p>
+      <h1>{t('notFound.title')}</h1>
+      <p>{t('notFound.description')}</p>
       <button
         onClick={() => navigate('/')}
         style={{
@@ -24,7 +26,7 @@ export function NotFound() {
           cursor: 'pointer',
         }}
       >
-        Volver a la página principal
+        {t('notFound.backToHome')}
       </button>
     </div>
   )

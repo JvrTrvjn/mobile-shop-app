@@ -1,0 +1,64 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error has occurred",
+    "back": "Go back"
+  },
+  "header": {
+    "title": "Mobile Shop",
+    "home": "Home"
+  },
+  "productDetail": {
+    "addToCart": "Product details",
+    "add": "Add to cart",
+    "adding": "Adding...",
+    "goBack": "Back to store",
+    "selectColor": "Select a color",
+    "selectStorage": "Select storage",
+    "specifications": "Specifications",
+    "selectOptions": "Select options",
+    "loadingDetails": "Loading product details...",
+    "noImage": "Image not available",
+    "unavailablePrice": "Price not available",
+    "noColorOptions": "No color options available",
+    "noStorageOptions": "No storage options available",
+    "brand": "Brand",
+    "cpu": "CPU",
+    "ram": "RAM",
+    "os": "Operating System",
+    "colors": "Colors",
+    "storage": "Storage",
+    "display": "Display",
+    "battery": "Battery",
+    "cameras": "Cameras",
+    "dimensions": "Dimensions",
+    "weight": "Weight",
+    "notSpecified": "Not specified"
+  },
+  "home": {
+    "search": "Search by brand or model...",
+    "loadingProducts": "Loading products...",
+    "noResults": "No products found matching \"{term}\"",
+    "showingResults": "Showing {count} products for \"{term}\"",
+    "showingAll": "Showing {count} products",
+    "showAllResults": "Show all results ({count})"
+  },
+  "cart": {
+    "added": "{brand} {model} successfully added!",
+    "error": "Could not add product to cart. Please try again later.",
+    "selectOptions": "Please select color and storage",
+    "selectColor": "Please select a color",
+    "selectStorage": "Please select storage"
+  },
+  "errors": {
+    "apiError": "Could not connect to server",
+    "productNotFound": "Product information not found",
+    "loadProducts": "Error loading products",
+    "invalidId": "Invalid product ID"
+  },
+  "notFound": {
+    "title": "404: Not Found",
+    "description": "The page you are looking for does not exist.",
+    "backToHome": "Back to home page"
+  }
+}

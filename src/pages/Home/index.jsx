@@ -4,6 +4,7 @@ import { fromEvent } from 'rxjs'
 import { debounceTime, map, filter, distinctUntilChanged } from 'rxjs/operators'
 import { fetchProducts } from '../../services/productService'
 import { ProductCard } from '../../components/ProductCard/index.jsx'
+import { useTranslation } from '../../context/I18nContext'
 import './style.css'
 
 export function Home() {
@@ -17,6 +18,7 @@ export function Home() {
   const suggestionsRef = useRef(null)
   const productsRef = useRef(products)
   const location = useLocation()
+  const { t } = useTranslation()
 
   useEffect(() => {
     productsRef.current = products
@@ -30,14 +32,14 @@ export function Home() {
         setFilteredProducts(data)
       } catch (err) {
         console.error('Error al cargar productos:', err)
-        setError('Error al cargar los productos')
+        setError(t('errors.loadProducts'))
       } finally {
         setLoading(false)
       }
     }
 
     loadProducts()
-  }, [])
+  }, [t])
 
   const filterProductsByTerm = useCallback(term => {
     if (!term.trim()) return productsRef.current
@@ -128,7 +130,7 @@ export function Home() {
           <input
             ref={searchInputRef}
             type="text"
-            placeholder="Buscar por marca o modelo..."
+            placeholder={t('home.search')}
             onKeyDown={handleKeyDown}
             onClick={e => e.stopPropagation()}
             className="search-input"
@@ -171,28 +173,26 @@ export function Home() {
                     </div>
                   </div>
                   <div className="suggestion-price">
-                    {product.price ? `${product.price}€` : 'Consultar precio'}
+                    {product.price ? `${product.price}€` : t('productDetail.unavailablePrice')}
                   </div>
                 </div>
               ))}
 
               {filteredProducts.length > 5 && (
                 <div className="show-all-results" onClick={handleShowAllResults}>
-                  Mostrar todos los resultados ({filteredProducts.length})
+                  {t('home.showAllResults', { count: filteredProducts.length })}
                 </div>
               )}
 
               {filteredProducts.length === 0 && (
-                <div className="no-suggestions">
-                  No se encontraron productos que coincidan con "{searchTerm}"
-                </div>
+                <div className="no-suggestions">{t('home.noResults', { term: searchTerm })}</div>
               )}
             </div>
           )}
         </div>
       </div>
 
-      {loading && <p className="loading-message">Cargando productos...</p>}
+      {loading && <p className="loading-message">{t('home.loadingProducts')}</p>}
 
       {error && <p className="error-message">{error}</p>}
 
@@ -200,21 +200,19 @@ export function Home() {
         <>
           <div className="results-count">
             {searchTerm
-              ? `Mostrando ${filteredProducts.length} productos para "${searchTerm}"`
-              : `Mostrando ${filteredProducts.length} productos`}
+              ? t('home.showingResults', { count: filteredProducts.length, term: searchTerm })
+              : t('home.showingAll', { count: filteredProducts.length })}
           </div>
 
           <div className="product-grid">
             {filteredProducts.length > 0 ? (
               filteredProducts.map(product => (
-                <div className="product-card-wrapper" key={product.id}>
+                <div className="product-card-wrapper" key={product.id} data-testid="product-card">
                   <ProductCard product={product} />
                 </div>
               ))
             ) : (
-              <p className="no-results">
-                No se encontraron productos que coincidan con "{searchTerm}"
-              </p>
+              <p className="no-results">{t('home.noResults', { term: searchTerm })}</p>
             )}
           </div>
         </>

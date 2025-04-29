@@ -1,5 +1,6 @@
 import { useLocation } from 'preact-iso'
 import './style.css'
+import { useTranslation } from '../../context/I18nContext'
 
 /**
  * Componente de migas de pan para rutas de navegación
@@ -9,6 +10,7 @@ import './style.css'
  */
 export function Breadcrumb({ items = [] }) {
   const location = useLocation()
+  const { t } = useTranslation()
 
   const navigate = path => {
     if (path) {
@@ -28,10 +30,10 @@ export function Breadcrumb({ items = [] }) {
 
           {item.path && index !== items.length - 1 ? (
             <span className="breadcrumb-link" onClick={() => navigate(item.path)}>
-              {item.label}
+              {t(item.label)}
             </span>
           ) : (
-            <span className="breadcrumb-text">{item.label}</span>
+            <span className="breadcrumb-text">{t(item.label)}</span>
           )}
         </div>
       ))}

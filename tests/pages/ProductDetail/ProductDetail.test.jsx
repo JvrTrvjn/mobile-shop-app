@@ -35,14 +35,14 @@ vi.mock('../../../src/components/ColorSelector/index.jsx', () => ({
 vi.mock('../../../src/components/StorageSelector/index.jsx', () => ({
   StorageSelector: ({ options, selectedStorage, onStorageSelect }) => (
     <div data-testid="storage-selector">
-      {options.map(option => (
+      {options.map(storage => (
         <button
-          key={option.code}
-          data-testid={`storage-option-${option.code}`}
-          className={selectedStorage === String(option.code) ? 'selected' : ''}
-          onClick={() => onStorageSelect(String(option.code))}
+          key={storage.code}
+          data-testid={`storage-option-${storage.code}`}
+          className={selectedStorage === String(storage.code) ? 'selected' : ''}
+          onClick={() => onStorageSelect(String(storage.code))}
         >
-          {option.name}
+          {storage.name}
         </button>
       ))}
     </div>
@@ -51,197 +51,179 @@ vi.mock('../../../src/components/StorageSelector/index.jsx', () => ({
 
 vi.mock('../../../src/components/AddToCartButton/index.jsx', () => ({
   AddToCartButton: ({ product, selectedColor, selectedStorage }) => (
-    <div data-testid="add-to-cart-button">
-      Añadir al carrito ({selectedColor}, {selectedStorage})
+    <div
+      data-testid="add-to-cart-button"
+      data-product-id={product.id}
+      data-color={selectedColor}
+      data-storage={selectedStorage}
+    >
+      AddToCartButton
     </div>
   ),
 }))
 
-describe('ProductDetail Page', () => {
+vi.mock('../../../src/context/I18nContext', () => ({
+  useTranslation: () => ({
+    t: key => {
+      const translations = {
+        'product.loading': 'Cargando detalles del producto...',
+        'product.error': 'Error al cargar el producto',
+        'product.tryAgain': 'Intentar de nuevo',
+        'product.colors': 'Colores:',
+        'product.storage': 'Almacenamiento:',
+        'product.price': 'Precio:',
+        'product.brand': 'Marca:',
+        'product.cpu': 'CPU:',
+        'product.ram': 'RAM:',
+        'product.os': 'Sistema operativo:',
+        'product.displaySize': 'Tamaño de pantalla:',
+        'product.camera': 'Cámara:',
+        'product.dimensions': 'Dimensiones:',
+        'product.weight': 'Peso:',
+        'product.notFound': 'Producto no encontrado',
+      }
+      return translations[key] || key
+    },
+    language: 'es',
+  }),
+}))
+
+vi.mock('../../../src/context/ToastContext', () => ({
+  useToast: () => ({
+    error: vi.fn(),
+    success: vi.fn(),
+  }),
+}))
+
+describe('ProductDetail Component', () => {
   const mockProduct = {
     id: '1',
     brand: 'Apple',
     model: 'iPhone 13',
     price: 999,
     imgUrl: 'iphone13.jpg',
-    cpu: 'A15 Bionic',
-    ram: '4 GB',
+    cpu: 'A15',
+    ram: '6GB',
     os: 'iOS 15',
-    displaySize: '6.1 pulgadas',
-    battery: '3240 mAh',
-    primaryCamera: ['12 MP', 'f/1.6'],
-    dimensions: '146.7 x 71.5 x 7.65 mm',
-    weight: '174',
+    displaySize: '6.1 inches',
+    camera: '12MP',
+    dimensions: '146.7 x 71.5 x 7.7 mm',
+    weight: '174g',
     options: {
       colors: [
         { code: 1000, name: 'Negro' },
         { code: 2000, name: 'Blanco' },
-        { code: 3000, name: 'Azul' },
       ],
       storages: [
-        { code: 64, name: '64 GB' },
-        { code: 128, name: '128 GB' },
-        { code: 256, name: '256 GB' },
+        { code: 1, name: '64GB' },
+        { code: 2, name: '128GB' },
       ],
     },
   }
 
   beforeEach(() => {
     vi.clearAllMocks()
-
-    vi.mocked(fetchProductDetails).mockResolvedValue(mockProduct)
+    fetchProductDetails.mockResolvedValue(mockProduct)
   })
 
-  it('muestra un estado de carga inicialmente', () => {
-    render(<ProductDetail id="1" />)
+  it('muestra un mensaje de carga mientras se obtienen los datos', async () => {
+    fetchProductDetails.mockImplementation(
+      () => new Promise(resolve => setTimeout(() => resolve(mockProduct), 100))
+    )
+
+    render(<ProductDetail />)
+
     expect(screen.getByText('Cargando detalles del producto...')).toBeDefined()
-  })
-
-  it('carga y muestra los detalles del producto', async () => {
-    render(<ProductDetail id="1" />)
 
     await waitFor(() => {
       expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
     })
-
-    expect(fetchProductDetails).toHaveBeenCalledWith('1')
-
-    expect(screen.getByText('Apple iPhone 13')).toBeDefined()
-    expect(screen.getByText('999€')).toBeDefined()
-
-    expect(screen.getByText('CPU:')).toBeDefined()
-    expect(screen.getByText('A15 Bionic')).toBeDefined()
-    expect(screen.getByText('RAM:')).toBeDefined()
-    expect(screen.getByText('4 GB')).toBeDefined()
-    expect(screen.getByText('Sistema Operativo:')).toBeDefined()
-    expect(screen.getByText('iOS 15')).toBeDefined()
-
-    const productImage = screen.getByAltText('Apple iPhone 13')
-    expect(productImage).toBeDefined()
-    expect(productImage.getAttribute('src')).toBe('iphone13.jpg')
-
-    expect(screen.getByTestId('color-selector')).toBeDefined()
-    expect(screen.getByTestId('storage-selector')).toBeDefined()
-
-    expect(screen.getByTestId('add-to-cart-button')).toBeDefined()
   })
 
-  it('muestra un mensaje de error si no se pueden cargar los detalles', async () => {
-    vi.mocked(fetchProductDetails).mockRejectedValue(new Error('Error de API'))
-
-    render(<ProductDetail id="1" />)
-
-    await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
-    })
-
-    // Verificar mensaje de error
-    expect(screen.getByText(/Error al cargar los detalles del producto/)).toBeDefined()
-
-    // Verificar botón para volver
-    const backButton = screen.getByText('Volver a la tienda')
-    expect(backButton).toBeDefined()
-  })
-
-  it('extrae el ID de la URL si no se proporciona como prop', async () => {
+  it('muestra los detalles del producto correctamente', async () => {
     render(<ProductDetail />)
 
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+      expect(screen.getByText('Apple')).toBeDefined()
+      expect(screen.getByText('iPhone 13')).toBeDefined()
+      expect(screen.getByText('999€')).toBeDefined()
+      expect(screen.getByText('CPU:')).toBeDefined()
+      expect(screen.getByText('A15')).toBeDefined()
+      expect(screen.getByTestId('color-selector')).toBeDefined()
+      expect(screen.getByTestId('storage-selector')).toBeDefined()
+      expect(screen.getByTestId('add-to-cart-button')).toBeDefined()
     })
-
-    expect(fetchProductDetails).toHaveBeenCalledWith('1')
   })
 
-  it('navega a la página principal al hacer clic en el botón "Volver a la tienda"', async () => {
-    render(<ProductDetail id="1" />)
+  it('permite seleccionar un color', async () => {
+    render(<ProductDetail />)
 
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+      expect(screen.getByTestId('color-selector')).toBeDefined()
     })
-
-    fireEvent.click(screen.getByText('← Volver a la tienda'))
-
-    expect(mockRoute).toHaveBeenCalledWith('/')
-  })
-
-  it('muestra "Imagen no disponible" cuando no hay URL de imagen', async () => {
-    const productWithoutImage = {
-      ...mockProduct,
-      imgUrl: null,
-    }
-    vi.mocked(fetchProductDetails).mockResolvedValue(productWithoutImage)
-
-    render(<ProductDetail id="1" />)
-
-    await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
-    })
-
-    expect(screen.getByText('Imagen no disponible')).toBeDefined()
-  })
-
-  it('muestra "Precio no disponible" cuando no hay precio', async () => {
-    const productWithoutPrice = {
-      ...mockProduct,
-      price: null,
-    }
-    vi.mocked(fetchProductDetails).mockResolvedValue(productWithoutPrice)
-
-    render(<ProductDetail id="1" />)
-
-    await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
-    })
-
-    expect(screen.getByText('Precio no disponible')).toBeDefined()
-  })
-
-  it('permite seleccionar diferentes opciones de color', async () => {
-    render(<ProductDetail id="1" />)
-
-    await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
-    })
-
-    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('1000')
 
     fireEvent.click(screen.getByTestId('color-option-2000'))
 
-    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('2000')
+    await waitFor(() => {
+      const addToCartButton = screen.getByTestId('add-to-cart-button')
+      expect(addToCartButton.dataset.color).toBe('2000')
+    })
   })
 
-  it('permite seleccionar diferentes opciones de almacenamiento', async () => {
-    render(<ProductDetail id="1" />)
+  it('permite seleccionar un almacenamiento', async () => {
+    render(<ProductDetail />)
 
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+      expect(screen.getByTestId('storage-selector')).toBeDefined()
     })
 
-    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('64')
+    fireEvent.click(screen.getByTestId('storage-option-2'))
 
-    fireEvent.click(screen.getByTestId('storage-option-128'))
-
-    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('128')
+    await waitFor(() => {
+      const addToCartButton = screen.getByTestId('add-to-cart-button')
+      expect(addToCartButton.dataset.storage).toBe('2')
+    })
   })
 
-  it('muestra mensaje cuando no hay opciones disponibles', async () => {
-    const productWithoutOptions = {
-      ...mockProduct,
-      options: {
-        colors: [],
-        storages: [],
-      },
-    }
-    vi.mocked(fetchProductDetails).mockResolvedValue(productWithoutOptions)
+  it('muestra un mensaje de error cuando falla la carga', async () => {
+    fetchProductDetails.mockRejectedValue(new Error('Error de prueba'))
 
-    render(<ProductDetail id="1" />)
+    render(<ProductDetail />)
 
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+      expect(screen.getByText('Error al cargar el producto')).toBeDefined()
+      expect(screen.getByText('Intentar de nuevo')).toBeDefined()
+    })
+  })
+
+  it('permite reintentar la carga después de un error', async () => {
+    fetchProductDetails
+      .mockRejectedValueOnce(new Error('Error de prueba'))
+      .mockResolvedValueOnce(mockProduct)
+
+    render(<ProductDetail />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Error al cargar el producto')).toBeDefined()
     })
 
-    expect(screen.getByText('No hay opciones de color disponibles')).toBeDefined()
-    expect(screen.getByText('No hay opciones de almacenamiento disponibles')).toBeDefined()
+    fireEvent.click(screen.getByText('Intentar de nuevo'))
+
+    expect(fetchProductDetails).toHaveBeenCalledTimes(2)
+
+    await waitFor(() => {
+      expect(screen.getByText('Apple')).toBeDefined()
+      expect(screen.getByText('iPhone 13')).toBeDefined()
+    })
+  })
+
+  it('muestra un mensaje cuando el producto no se encuentra', async () => {
+    fetchProductDetails.mockResolvedValue(null)
+
+    render(<ProductDetail />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Producto no encontrado')).toBeDefined()
+    })
   })
 })

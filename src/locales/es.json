@@ -1,0 +1,64 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ha ocurrido un error",
+    "back": "Volver"
+  },
+  "header": {
+    "title": "Mobile Shop",
+    "home": "Home"
+  },
+  "productDetail": {
+    "addToCart": "Detalles del producto",
+    "add": "Añadir al carrito",
+    "adding": "Añadiendo...",
+    "goBack": "Volver a la tienda",
+    "selectColor": "Selecciona un color",
+    "selectStorage": "Selecciona almacenamiento",
+    "specifications": "Especificaciones",
+    "selectOptions": "Selecciona las opciones",
+    "loadingDetails": "Cargando detalles del producto...",
+    "noImage": "Imagen no disponible",
+    "unavailablePrice": "Precio no disponible",
+    "noColorOptions": "No hay opciones de color disponibles",
+    "noStorageOptions": "No hay opciones de almacenamiento disponibles",
+    "brand": "Marca",
+    "cpu": "CPU",
+    "ram": "RAM",
+    "os": "Sistema Operativo",
+    "colors": "Colores",
+    "storage": "Almacenamiento",
+    "display": "Resolución",
+    "battery": "Batería",
+    "cameras": "Cámaras",
+    "dimensions": "Dimensiones",
+    "weight": "Peso",
+    "notSpecified": "No especificado"
+  },
+  "home": {
+    "search": "Buscar por marca o modelo...",
+    "loadingProducts": "Cargando productos...",
+    "noResults": "No se encontraron productos que coincidan con \"{term}\"",
+    "showingResults": "Mostrando {count} productos para \"{term}\"",
+    "showingAll": "Mostrando {count} productos",
+    "showAllResults": "Mostrar todos los resultados ({count})"
+  },
+  "cart": {
+    "added": "¡{brand} {model} añadido correctamente!",
+    "error": "No se pudo añadir el producto al carrito. Intenta más tarde.",
+    "selectOptions": "Selecciona color y almacenamiento",
+    "selectColor": "Selecciona un color",
+    "selectStorage": "Selecciona almacenamiento"
+  },
+  "errors": {
+    "apiError": "No se pudo conectar con el servidor",
+    "productNotFound": "No se encontró información del producto",
+    "loadProducts": "Error al cargar los productos",
+    "invalidId": "ID de producto no válido"
+  },
+  "notFound": {
+    "title": "404: Not Found",
+    "description": "La página que estás buscando no existe.",
+    "backToHome": "Volver a la página principal"
+  }
+}

@@ -18,6 +18,19 @@ vi.mock('../../src/utils/logger', () => ({
   },
 }))
 
+vi.mock('../../src/context/I18nContext', () => ({
+  useTranslation: () => ({
+    t: key => {
+      // Simulación de las traducciones necesarias
+      const translations = {
+        'cart.errorAdding': 'No se pudo añadir el producto al carrito. Inténtalo de nuevo.',
+      }
+      return translations[key] || key
+    },
+    language: 'es',
+  }),
+}))
+
 const TestComponent = ({ onRender }) => {
   const cartContext = useCart()
   onRender(cartContext)
