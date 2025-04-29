@@ -49,7 +49,9 @@ export const saveToCache = (key, data) => {
  * @returns {string} Clave de cache
  */
 export const getCacheKey = (resourceType, id = null) => {
-  return id ? `${resourceType}_${id}` : resourceType
+  // Asegurarse de que el ID sea siempre una cadena y esté correctamente formateado
+  const formattedId = id ? String(id).trim() : null;
+  return formattedId ? `${resourceType}_${formattedId}` : resourceType;
 }
 
 export const clearCache = () => {

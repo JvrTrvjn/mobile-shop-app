@@ -1,6 +1,7 @@
 import { useLocation } from 'preact-iso'
 import { useEffect, useState, useCallback } from 'preact/hooks'
 import { fetchProductDetails } from '../../services/productService'
+import { clearCache } from '../../services/cache'
 import { ColorSelector } from '../../components/ColorSelector/index.jsx'
 import { StorageSelector } from '../../components/StorageSelector/index.jsx'
 import { AddToCartButton } from '../../components/AddToCartButton/index.jsx'
@@ -105,9 +106,20 @@ export function ProductDetail({ id: propId }) {
   const handleRetry = useCallback(() => {
     setError(null)
     setLoading(true)
+    
+    // Limpiar el caché antes de volver a intentar
+    try {
+      clearCache();
+      console.log('Cache cleared successfully');
+    } catch (cacheError) {
+      console.error('Error clearing cache:', cacheError);
+    }
+    
     const loadProductDetails = async () => {
       try {
+        console.log('Retrying to load product ID:', productId);
         const productData = await fetchProductDetails(productId)
+        console.log('Retry successful, product data:', productData);
         setProduct(productData)
         if (productData.options?.colors?.length > 0) {
           setSelectedColor(String(productData.options.colors[0].code))
@@ -116,6 +128,7 @@ export function ProductDetail({ id: propId }) {
           setSelectedStorage(String(productData.options.storages[0].code))
         }
       } catch (err) {
+        console.error('Retry failed:', err);
         setError(`${t('product.error')}: ${err.message}`)
       } finally {
         setLoading(false)
@@ -138,9 +151,20 @@ export function ProductDetail({ id: propId }) {
       <div className="product-detail-container error">
         <div className="error-icon">!</div>
         <p className="error-message">{error}</p>
-        <button onClick={handleRetry} className="retry-button">
-          {t('product.tryAgain')}
-        </button>
+        <div className="error-actions">
+          <button onClick={handleRetry} className="retry-button">
+            {t('product.tryAgain')}
+          </button>
+          <button 
+            onClick={() => {
+              clearCache();
+              window.location.reload();
+            }} 
+            className="clear-cache-button"
+          >
+            Limpiar caché y recargar
+          </button>
+        </div>
       </div>
     )
   }

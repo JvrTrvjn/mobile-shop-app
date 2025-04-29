@@ -37,18 +37,34 @@ export const fetchProductDetails = async productId => {
   if (!productId || productId === 'no-id' || productId === 'undefined') {
     throw new Error('Invalid product ID')
   }
-
-  const cacheKey = getCacheKey('product', String(productId))
-  const cachedProduct = getFromCache(cacheKey)
-
+  
+  // Asegurarse de que el productId sea una cadena válida
+  const validProductId = String(productId).trim();
+  console.log('Fetching product with ID:', validProductId);
+  
+  // Generar una clave de caché única para este producto
+  const cacheKey = getCacheKey('product', validProductId);
+  console.log('Cache key generated:', cacheKey);
+  
+  // Intentar obtener el producto del caché
+  const cachedProduct = getFromCache(cacheKey);
+  
   if (cachedProduct) {
-    return cachedProduct
+    console.log('Product found in cache:', cachedProduct.brand, cachedProduct.model);
+    return cachedProduct;
   }
 
   try {
-    const product = await getProductDetails(productId)
-
-    saveToCache(cacheKey, product)
+    const product = await getProductDetails(validProductId)
+    
+    if (product) {
+      console.log('Product received from API:', product.brand, product.model);
+      // Guardar en caché usando la clave única generada anteriormente
+      saveToCache(cacheKey, product);
+      console.log('Product saved to cache with key:', cacheKey);
+    } else {
+      console.error('Received null or undefined product from API');
+    }
 
     return product
   } catch (error) {
