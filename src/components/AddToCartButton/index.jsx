@@ -19,7 +19,9 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
 
   const handleAddToCart = async () => {
     if (!selectedColor || !selectedStorage) {
-      toast.warning('Por favor, selecciona color y almacenamiento')
+      toast.warning('Por favor, selecciona color y almacenamiento', {
+        toastId: 'selection-warning'
+      })
       return
     }
 
@@ -27,9 +29,13 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
 
     try {
       await addToCart(product, quantity, selectedColor, selectedStorage)
-      toast.success(`¡${product.brand} ${product.model} añadido correctamente!`)
+      toast.success(`¡${product.brand} ${product.model} añadido correctamente!`, {
+        toastId: `add-success-${product.id}-${selectedColor}-${selectedStorage}`
+      })
     } catch (error) {
-      toast.error(`Error al añadir al carrito: ${error.message}`)
+      toast.error(`Error al añadir al carrito: ${error.message}`, {
+        toastId: `add-error-${product.id}`
+      })
     } finally {
       setIsAdding(false)
     }
