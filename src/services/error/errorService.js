@@ -42,9 +42,9 @@ export class ErrorService {
    * @returns {JSX.Element|null} UI de fallback o null
    */
   static handleComponentError(component, error, fallbackUI) {
-    logger.error(`[Component Error: ${component}]`, error);
+    logger.error(`[Component Error: ${component}]`, error)
     // Devolver UI de fallback para el componente
-    return fallbackUI || null;
+    return fallbackUI || null
   }
 
   /**
@@ -54,10 +54,10 @@ export class ErrorService {
    * @returns {Object} Objeto de error formateado
    */
   static handleCacheError(error, action) {
-    logger.error(`[Cache Error: ${action}]`, error);
+    logger.error(`[Cache Error: ${action}]`, error)
     return {
       message: `Error en la caché durante ${action}`,
-      originalError: error
-    };
+      originalError: error,
+    }
   }
 }
