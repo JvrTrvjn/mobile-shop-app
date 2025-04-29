@@ -8,9 +8,8 @@ vi.mock('../../../src/context/I18nContext', () => ({
       const translations = {
         'header.title': 'Mobile Shop',
         'header.home': 'Home',
-        'breadcrumb.home': 'Home',
-        'breadcrumb.product': 'Product Details',
-        'breadcrumb.notFound': 'Not Found',
+        'header.ProductDetails': 'Product Details',
+        'header.NotFound': 'Not Found',
       }
       return translations[key] || key
     },

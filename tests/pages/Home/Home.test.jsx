@@ -93,7 +93,7 @@ describe('Home Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    fetchProducts.mockResolvedValue(mockProducts)
+    fetchProducts.mockImplementation(() => Promise.resolve(mockProducts))
   })
 
   it('muestra mensaje de carga mientras se cargan los productos', async () => {
@@ -161,5 +161,56 @@ describe('Home Component', () => {
     await waitFor(() => {
       expect(screen.getByText('No hay productos disponibles')).toBeDefined()
     })
+  })
+})
+
+describe('Home Component - Tests Simplificados', () => {
+  const mockProducts = [
+    {
+      id: '1',
+      brand: 'Apple',
+      model: 'iPhone 13',
+      price: 999,
+      imgUrl: 'iphone13.jpg',
+    },
+    {
+      id: '2',
+      brand: 'Samsung',
+      model: 'Galaxy S21',
+      price: 899,
+      imgUrl: 'galaxy.jpg',
+    },
+  ]
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    fetchProducts.mockResolvedValue(mockProducts)
+  })
+
+  it('muestra mensaje de carga al inicio', () => {
+    fetchProducts.mockImplementation(
+      () => new Promise(resolve => setTimeout(() => resolve(mockProducts), 100))
+    )
+
+    render(<Home />)
+
+    expect(screen.getByText('Cargando productos...')).toBeDefined()
+  })
+
+  it('muestra los productos después de cargar', async () => {
+    render(<Home />)
+
+    await waitFor(
+      () => {
+        const productCards = screen.getAllByTestId('product-card')
+        expect(productCards.length).toBeGreaterThan(0)
+      },
+      { timeout: 3000 }
+    )
+
+    const productCards = screen.getAllByTestId('product-card')
+    expect(productCards).toHaveLength(2)
+    expect(productCards[0]).toHaveTextContent('Apple iPhone 13')
+    expect(productCards[1]).toHaveTextContent('Samsung Galaxy S21')
   })
 })

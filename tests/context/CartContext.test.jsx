@@ -21,7 +21,6 @@ vi.mock('../../src/utils/logger', () => ({
 vi.mock('../../src/context/I18nContext', () => ({
   useTranslation: () => ({
     t: key => {
-      // Simulación de las traducciones necesarias
       const translations = {
         'cart.errorAdding': 'No se pudo añadir el producto al carrito. Inténtalo de nuevo.',
       }
@@ -258,5 +257,87 @@ describe('CartContext', () => {
     })
 
     expect(cartContext.state.count).toBe(5)
+  })
+})
+
+describe('CartContext - Tests Simplificados', () => {
+  let cartContext
+  const onRender = ctx => {
+    cartContext = ctx
+  }
+
+  const mockProduct = {
+    id: '1',
+    brand: 'Apple',
+    model: 'iPhone 13',
+    price: 999,
+    imgUrl: 'iphone13.jpg',
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    localStorage.clear()
+
+    vi.mocked(getCartCount).mockReturnValue(0)
+    vi.mocked(addProductToCart).mockResolvedValue({ count: 1 })
+  })
+
+  it('proporciona un estado inicial del carrito vacío', () => {
+    render(
+      <CartProvider>
+        <TestComponent onRender={onRender} />
+      </CartProvider>
+    )
+
+    expect(cartContext.state.count).toBe(0)
+    expect(cartContext.state.items.length).toBe(0)
+    expect(cartContext.state.total).toBe(0)
+  })
+
+  it('permite añadir productos al carrito', async () => {
+    render(
+      <CartProvider>
+        <TestComponent onRender={onRender} />
+      </CartProvider>
+    )
+
+    const addPromise = Promise.resolve({ count: 1 })
+    vi.mocked(addProductToCart).mockReturnValue(addPromise)
+
+    await act(async () => {
+      await cartContext.addToCart(mockProduct, 1, '1000', '64')
+    })
+
+    expect(cartContext.state.count).toBe(1)
+    expect(cartContext.state.items.length).toBe(1)
+    expect(cartContext.state.total).toBe(999)
+
+    expect(addProductToCart).toHaveBeenCalledWith({
+      id: '1',
+      colorCode: 1000,
+      storageCode: 64,
+    })
+  })
+
+  it('maneja los errores al añadir productos', async () => {
+    render(
+      <CartProvider>
+        <TestComponent onRender={onRender} />
+      </CartProvider>
+    )
+
+    const errorPromise = Promise.reject(new Error('API Error'))
+    vi.mocked(addProductToCart).mockReturnValue(errorPromise)
+
+    let error
+    await act(async () => {
+      try {
+        await cartContext.addToCart(mockProduct, 1, '1000', '64')
+      } catch (err) {
+        error = err
+      }
+    })
+
+    expect(error).toBeDefined()
   })
 })

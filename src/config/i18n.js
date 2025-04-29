@@ -22,29 +22,32 @@ const testConfig = {
   debug: false,
 }
 
-i18n
-  .use(isTestEnv ? null : LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: {
-      es: {
-        translation: esTranslation,
-      },
-      en: {
-        translation: enTranslation,
-      },
+const i18nInstance = i18n.use(initReactI18next)
+
+if (!isTestEnv && LanguageDetector) {
+  i18nInstance.use(LanguageDetector)
+}
+
+i18nInstance.init({
+  resources: {
+    es: {
+      translation: esTranslation,
     },
-    fallbackLng: 'es',
-    debug: process.env.NODE_ENV === 'development',
-    interpolation: {
-      escapeValue: false,
+    en: {
+      translation: enTranslation,
     },
-    react: {
-      useSuspense: false,
-    },
-    saveMissing: isDev,
-    missingKeyHandler,
-    ...(isTestEnv ? testConfig : {}),
-  })
+  },
+  fallbackLng: 'es',
+  debug: process.env.NODE_ENV === 'development',
+  interpolation: {
+    escapeValue: false,
+  },
+  react: {
+    useSuspense: false,
+  },
+  saveMissing: isDev,
+  missingKeyHandler,
+  ...(isTestEnv ? testConfig : {}),
+})
 
 export default i18n

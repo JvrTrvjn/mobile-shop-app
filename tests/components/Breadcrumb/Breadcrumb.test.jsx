@@ -41,7 +41,7 @@ describe('Breadcrumb Component', () => {
     render(<Breadcrumb items={items} />)
 
     expect(screen.getByText('Home')).toBeDefined()
-    expect(screen.queryByText('/')).toBeNull() // No debe haber separadores con un solo item
+    expect(screen.queryByText('/')).toBeNull()
   })
 
   it('renderiza múltiples items con separadores', () => {
@@ -56,7 +56,6 @@ describe('Breadcrumb Component', () => {
     expect(screen.getByText('Products')).toBeDefined()
     expect(screen.getByText('Product Details')).toBeDefined()
 
-    // Debe haber 2 separadores (entre los 3 items)
     const separators = screen.queryAllByText('/')
     expect(separators.length).toBe(2)
   })

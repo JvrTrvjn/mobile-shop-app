@@ -24,13 +24,14 @@ vi.mock('../../../src/context/I18nContext', () => ({
   useTranslation: () => ({
     t: key => {
       const translations = {
-        'productDetail.addToCart': 'Añadir al carrito',
+        'productDetail.add': 'Añadir al carrito',
         'productDetail.adding': 'Añadiendo...',
         'cart.selectColor': 'Selecciona un color',
         'cart.selectStorage': 'Selecciona almacenamiento',
         'cart.selectOptions': 'Selecciona color y almacenamiento',
-        'cart.added': '{{brand}} {{model}} añadido al carrito',
+        'cart.addedSuccessfully': 'Añadido:',
         'cart.error': 'Error al añadir al carrito',
+        'cart.priceNotAvailable': 'Precio no disponible',
       }
       return translations[key] || key
     },
@@ -149,5 +150,46 @@ describe('AddToCartButton Component', () => {
     })
 
     expect(mockToast.error).toHaveBeenCalled()
+  })
+})
+
+describe('AddToCartButton - Tests Simplificados', () => {
+  const mockProduct = {
+    id: '1',
+    brand: 'Apple',
+    model: 'iPhone 13',
+    price: 999,
+    imgUrl: 'iphone13.jpg',
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockAddToCart.mockResolvedValue({ count: 1 })
+  })
+
+  it('funciona correctamente con opciones válidas', () => {
+    render(<AddToCartButton product={mockProduct} selectedColor="1000" selectedStorage="64" />)
+
+    const button = screen.getByText('Añadir al carrito')
+    expect(button).toBeDefined()
+    expect(button.disabled).toBe(false)
+
+    expect(screen.getByText('1')).toBeDefined()
+
+    fireEvent.click(screen.getByText('+'))
+    expect(screen.getByText('2')).toBeDefined()
+
+    fireEvent.click(button)
+
+    expect(mockAddToCart).toHaveBeenCalledWith(mockProduct, 2, '1000', '64')
+  })
+
+  it('muestra mensajes apropiados cuando faltan opciones', () => {
+    render(<AddToCartButton product={mockProduct} selectedColor={null} selectedStorage={null} />)
+
+    expect(screen.getByText('Selecciona color y almacenamiento')).toBeDefined()
+
+    const button = screen.getByText('Añadir al carrito')
+    expect(button.disabled).toBe(true)
   })
 })

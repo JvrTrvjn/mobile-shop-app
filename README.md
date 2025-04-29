@@ -138,12 +138,24 @@ La aplicación se integra con los siguientes endpoints:
 - `GET /api/product/:id` - Recupera información detallada de un producto específico
 - `POST /api/cart` - Añade un producto al carrito de compras
 
-## 🔮 Mejoras Futuras
 
-Algunas mejoras potenciales para versiones futuras:
+## 🔮 Áreas de Desarrollo Futuro
 
-- Implementar estados de carga skeleton para mejorar la percepción de rendimiento
-- Añadir más pruebas unitarias y de integración para aumentar la cobertura
-- Crear una página completa de carrito de compras con funcionalidad de checkout
-- Implementar autenticación de usuario para experiencias personalizadas
-- Añadir función de comparación de productos
+Este proyecto se encuentra en evolución continua. Se han identificado diversas áreas para futuras mejoras que se abordarán en próximas iteraciones:
+
+### Optimización de Rendimiento
+Se implementarán mejoras en el rendimiento general de la aplicación, incluyendo lazy loading para componentes e imágenes, optimización del tamaño de los bundles mediante code splitting, y refinamiento del sistema de caché para una gestión más granular de los datos.
+
+### Mejoras en Diseño Responsive
+Si bien la aplicación es actualmente adaptable a diferentes dispositivos, se trabajará en perfeccionar la experiencia en resoluciones intermedias y pantallas más pequeñas, con especial atención a la página de detalles de producto y los selectores de opciones.
+
+### Experiencia de Usuario
+Se incorporarán estados de carga tipo skeleton para mejorar la percepción de rendimiento, una navegación más intuitiva mediante breadcrumbs mejorados, y sistemas de paginación o scroll infinito para manejar grandes conjuntos de datos.
+
+### Testing y Calidad
+Se ampliará la cobertura de pruebas unitarias y se implementarán pruebas de integración para garantizar la robustez del código en escenarios más complejos. Esto incluirá pruebas específicas para los componentes del carrito y el sistema de búsqueda.
+
+### Accesibilidad
+Se mejorarán los aspectos de accesibilidad mediante la incorporación de atributos ARIA apropiados, optimización de la navegación por teclado y mejora del contraste de colores según estándares WCAG.
+
+Estas mejoras representan el compromiso con la calidad del producto y la intención de desarrollar una aplicación que no solo cumpla con los requisitos técnicos, sino que también ofrezca una experiencia excepcional al usuario final.
