@@ -93,10 +93,7 @@ export function Home() {
             autoComplete="off"
           />
           {searchTerm && (
-            <button
-              className="clear-search"
-              onClick={clearSearch}
-            >
+            <button className="clear-search" onClick={clearSearch}>
               ×
             </button>
           )}

@@ -1,5 +1,5 @@
 .app-header {
-  background-color: #f0f2f5; /* Nuevo color de fondo plateado suave */
+  background-color: #f0f2f5; 
   box-shadow: var(--shadow-sm);
   padding: var(--spacing-md) var(--spacing-lg);
   position: sticky;
@@ -50,7 +50,6 @@
   color: var(--color-light-text);
 }
 
-/* Nuevos estilos para los controles de usuario */
 .user-controls {
   display: flex;
   align-items: center;
@@ -61,7 +60,7 @@
   margin-right: var(--spacing-md);
   display: flex;
   align-items: center;
-  transform: translateY(0.25rem); /* Bajar ligeramente el carrito */
+  transform: translateY(0.25rem); 
 }
 
 .language-container {

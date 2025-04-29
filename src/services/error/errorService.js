@@ -1,9 +1,5 @@
 import logger from '../../utils/logger'
 
-/**
- * Servicio centralizado para el manejo de errores en la aplicación
- * Proporciona métodos para manejar diferentes tipos de errores de forma consistente
- */
 export class ErrorService {
   /**
    * Maneja errores relacionados con peticiones a la API
@@ -43,7 +39,6 @@ export class ErrorService {
    */
   static handleComponentError(component, error, fallbackUI) {
     logger.error(`[Component Error: ${component}]`, error)
-    // Devolver UI de fallback para el componente
     return fallbackUI || null
   }
 

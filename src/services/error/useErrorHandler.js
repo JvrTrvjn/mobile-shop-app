@@ -1,4 +1,3 @@
-// filepath: /Users/javit/Desktop/mobile-shop-app/src/services/error/useErrorHandler.js
 import { useCallback } from 'preact/hooks'
 import { useToast } from '../../context/ToastContext'
 import { ErrorService } from './errorService'
@@ -14,9 +13,6 @@ import logger from '../../utils/logger'
 export function useErrorHandler() {
   const toast = useToast()
 
-  /**
-   * Notifica un error general al usuario y lo registra
-   */
   const notifyError = useCallback(
     (error, options = {}) => {
       const message = error.message || 'Ha ocurrido un error'
@@ -31,9 +27,6 @@ export function useErrorHandler() {
     [toast]
   )
 
-  /**
-   * Notifica un error de API al usuario y lo registra
-   */
   const notifyApiError = useCallback(
     (error, fallbackMessage, options = {}) => {
       const errorObj = ErrorService.handleApiError(error, fallbackMessage)
@@ -47,9 +40,6 @@ export function useErrorHandler() {
     [toast]
   )
 
-  /**
-   * Notifica un error de validación al usuario y lo registra
-   */
   const notifyValidationError = useCallback(
     (field, message, options = {}) => {
       const error = ErrorService.handleValidationError(field, message)
@@ -63,9 +53,6 @@ export function useErrorHandler() {
     [toast]
   )
 
-  /**
-   * Notifica un error de caché al usuario y lo registra
-   */
   const notifyCacheError = useCallback(
     (error, action, options = {}) => {
       const errorObj = ErrorService.handleCacheError(error, action)

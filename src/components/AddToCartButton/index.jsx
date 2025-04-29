@@ -29,7 +29,7 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
       })
       return
     }
-    
+
     if (!isPriceAvailable) {
       toast.warning(t('cart.priceNotAvailable'), {
         toastId: 'price-not-available-warning',
@@ -76,9 +76,9 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
           -
         </button>
         <span className="quantity-value">{quantity}</span>
-        <button 
-          className="quantity-btn" 
-          onClick={incrementQuantity} 
+        <button
+          className="quantity-btn"
+          onClick={incrementQuantity}
           disabled={isAdding || !isPriceAvailable}
         >
           +
@@ -99,8 +99,8 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
 
       {(!selectedColor || !selectedStorage || !isPriceAvailable) && (
         <div className="selection-reminder">
-          {!isPriceAvailable 
-            ? t('cart.priceNotAvailable') 
+          {!isPriceAvailable
+            ? t('cart.priceNotAvailable')
             : !selectedColor && !selectedStorage
               ? t('cart.selectOptions')
               : !selectedColor

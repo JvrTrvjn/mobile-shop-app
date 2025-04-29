@@ -6,7 +6,6 @@ import { StorageSelector } from '../../components/StorageSelector/index.jsx'
 import { AddToCartButton } from '../../components/AddToCartButton/index.jsx'
 import { useTranslation } from '../../context/I18nContext'
 import { ArrowLeft } from 'phosphor-react'
-import logger from '../../utils/logger'
 import './style.css'
 
 /**
@@ -24,7 +23,6 @@ export function ProductDetail({ id: propId }) {
   const [error, setError] = useState(null)
   const [selectedColor, setSelectedColor] = useState('')
   const [selectedStorage, setSelectedStorage] = useState('')
-  // Usamos el hook de traducción para obtener la función t
   const { t } = useTranslation()
 
   const navigateToHome = useCallback(() => {
@@ -40,7 +38,6 @@ export function ProductDetail({ id: propId }) {
 
   const productId = propId || extractIdFromUrl()
 
-  // eslint-disable-next-line no-console
   console.log('Product ID being used:', productId)
 
   useEffect(() => {
@@ -53,7 +50,6 @@ export function ProductDetail({ id: propId }) {
 
       try {
         const productData = await fetchProductDetails(productId)
-        // eslint-disable-next-line no-console
         console.log('Product data received:', productData)
 
         if (!productData) {
@@ -67,7 +63,6 @@ export function ProductDetail({ id: propId }) {
           productData.options.colors &&
           productData.options.colors.length > 0
         ) {
-          // eslint-disable-next-line no-console
           console.log(
             'Setting default color from options.colors array:',
             productData.options.colors[0]
@@ -80,7 +75,6 @@ export function ProductDetail({ id: propId }) {
           productData.options.storages &&
           productData.options.storages.length > 0
         ) {
-          // eslint-disable-next-line no-console
           console.log(
             'Setting default storage from options.storages array:',
             productData.options.storages[0]
@@ -99,13 +93,11 @@ export function ProductDetail({ id: propId }) {
   }, [productId, t])
 
   const handleColorSelect = useCallback(colorCode => {
-    // eslint-disable-next-line no-console
     console.log('Color selected:', colorCode)
     setSelectedColor(colorCode)
   }, [])
 
   const handleStorageSelect = useCallback(storageCode => {
-    // eslint-disable-next-line no-console
     console.log('Storage selected:', storageCode)
     setSelectedStorage(storageCode)
   }, [])
@@ -113,7 +105,6 @@ export function ProductDetail({ id: propId }) {
   const handleRetry = useCallback(() => {
     setError(null)
     setLoading(true)
-    // Re-trigger the effect to load product details
     const loadProductDetails = async () => {
       try {
         const productData = await fetchProductDetails(productId)
@@ -204,29 +195,41 @@ export function ProductDetail({ id: propId }) {
               <div className="specs-grid">
                 <div className="spec-item">
                   <span className="spec-label">{t('productDetail.brand')}:</span>
-                  <span className="spec-value">{product.brand || t('productDetail.notSpecified')}</span>
+                  <span className="spec-value">
+                    {product.brand || t('productDetail.notSpecified')}
+                  </span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">{t('productDetail.cpu')}:</span>
-                  <span className="spec-value">{product.cpu || t('productDetail.notSpecified')}</span>
+                  <span className="spec-value">
+                    {product.cpu || t('productDetail.notSpecified')}
+                  </span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">{t('productDetail.ram')}:</span>
-                  <span className="spec-value">{product.ram || t('productDetail.notSpecified')}</span>
+                  <span className="spec-value">
+                    {product.ram || t('productDetail.notSpecified')}
+                  </span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">{t('productDetail.os')}:</span>
-                  <span className="spec-value">{product.os || t('productDetail.notSpecified')}</span>
+                  <span className="spec-value">
+                    {product.os || t('productDetail.notSpecified')}
+                  </span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">{t('productDetail.display')}:</span>
                   <span className="spec-value">
-                    {product.displaySize || product.display?.size || t('productDetail.notSpecified')}
+                    {product.displaySize ||
+                      product.display?.size ||
+                      t('productDetail.notSpecified')}
                   </span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">{t('productDetail.battery')}:</span>
-                  <span className="spec-value">{product.battery || t('productDetail.notSpecified')}</span>
+                  <span className="spec-value">
+                    {product.battery || t('productDetail.notSpecified')}
+                  </span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">{t('productDetail.cameras')}:</span>

@@ -71,7 +71,7 @@
   display: flex;
   flex-direction: row;
   margin-bottom: var(--spacing-sm);
-  background-color: #ffffff; /* Cambiado de #f5f9f5 (verde claro) a #f5f5f0 (crema) */
+  background-color: #ffffff; 
   border-radius: 0;
   padding: var(--spacing-md);
   box-shadow: var(--shadow-sm);
@@ -89,7 +89,7 @@
 }
 
 .product-image-column {
-  flex: 6; /* Aumentamos la proporción de la columna de imagen */
+  flex: 6; 
   margin-right: var(--spacing-md);
 }
 
@@ -130,7 +130,7 @@
 }
 
 .product-info-column {
-  flex: 4; /* Ajustamos la proporción para que sea más ancho pero menor que la imagen */
+  flex: 4; 
   display: flex;
   flex-direction: column;
 }
@@ -239,7 +239,6 @@
   font-size: 0.85rem;
 }
 
-/* Estilos para el nuevo botón de volver en la parte superior */
 .back-navigation {
   margin-bottom: 20px;
   padding: 0 10px;
@@ -247,10 +246,9 @@
   width: 100%;
   margin-left: auto;
   margin-right: auto;
-  display: none; /* Ocultamos el botón superior */
+  display: none; 
 }
 
-/* Estilos para el botón de volver situado en la parte inferior izquierda */
 .back-to-store {
   position: fixed;
   bottom: 30px;
@@ -261,7 +259,7 @@
 }
 
 .back-button {
-  background-color: #6c5ce7; /* Color base complementario */
+  background-color: #6c5ce7; 
   color: white;
   border: none;
   border-radius: 8px;
@@ -273,19 +271,19 @@
   align-items: center;
   justify-content: center;
   min-width: 150px;
-  box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3); /* Sombra con color base */
+  box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3); 
   transition: all 0.3s ease;
-  gap: 8px; /* Espaciado entre el icono y el texto */
+  gap: 8px; 
 }
 
 .back-button:hover {
-  background-color: #8c7ae6; /* Color más saturado */
-  box-shadow: 0 6px 15px rgba(108, 92, 231, 0.5); /* Sombra más prominente */
-  transform: translateY(-2px); /* Efecto de elevación */
+  background-color: #8c7ae6; 
+  box-shadow: 0 6px 15px rgba(108, 92, 231, 0.5); 
+  transform: translateY(-2px); 
 }
 
 .back-button:active {
-  transform: translateY(1px); /* Efecto de presión */
+  transform: translateY(1px); 
   box-shadow: 0 2px 8px rgba(108, 92, 231, 0.4);
 }
 
@@ -306,7 +304,6 @@
     max-height: 400px;
   }
 
-  /* Mantener selectores horizontales */
   .color-selector,
   .storage-selector {
     flex-wrap: wrap;
@@ -314,7 +311,6 @@
   }
 }
 
-/* Media queries para pantallas grandes */
 @media (min-width: var(--breakpoint-lg)) {
   .product-detail-container {
     padding: 20px;
@@ -337,7 +333,6 @@
   }
 }
 
-/* Media queries para pantallas extra grandes */
 @media (min-width: var(--breakpoint-xl)) {
   .product-detail-container {
     padding: 30px;
