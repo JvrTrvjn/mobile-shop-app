@@ -5,6 +5,7 @@ import { ColorSelector } from '../../components/ColorSelector/index.jsx'
 import { StorageSelector } from '../../components/StorageSelector/index.jsx'
 import { AddToCartButton } from '../../components/AddToCartButton/index.jsx'
 import { useTranslation } from '../../context/I18nContext'
+import { ArrowLeft } from 'phosphor-react'
 import logger from '../../utils/logger'
 import './style.css'
 
@@ -291,7 +292,8 @@ export function ProductDetail({ id: propId }) {
       </div>
       <div className="back-to-store">
         <button onClick={navigateToHome} className="back-button">
-          ← {t('productDetail.goBack')}
+          <ArrowLeft size={20} weight="bold" />
+          {t('productDetail.goBack')}
         </button>
       </div>
     </div>

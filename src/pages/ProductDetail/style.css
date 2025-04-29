@@ -1,4 +1,3 @@
-
 .product-detail-container {
   margin: 0 auto;
   padding: 10px;
@@ -220,8 +219,6 @@
   overflow-y: auto;
 }
 
-
-
 .option-selector {
   margin-bottom: 8px;
 }
@@ -240,28 +237,54 @@
   font-size: 0.85rem;
 }
 
+/* Estilos para el nuevo botón de volver en la parte superior */
+.back-navigation {
+  margin-bottom: 20px;
+  padding: 0 10px;
+  max-width: 1200px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  display: none; /* Ocultamos el botón superior */
+}
+
+/* Estilos para el botón de volver situado en la parte inferior izquierda */
 .back-to-store {
-  margin-top: 0.5rem;
-  text-align: center;
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  z-index: 100;
+  margin-top: 0;
+  text-align: left;
 }
 
 .back-button {
-  background-color: var(--color-primary);
+  background-color: #6c5ce7; /* Color base complementario */
   color: white;
   border: none;
-  border-radius: var(--border-radius-sm);
-  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: 8px;
+  padding: 12px 20px;
   font-size: var(--font-size-md);
+  font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 200px;
-  transition: background-color var(--transition-normal);
+  min-width: 150px;
+  box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3); /* Sombra con color base */
+  transition: all 0.3s ease;
+  gap: 8px; /* Espaciado entre el icono y el texto */
 }
 
 .back-button:hover {
-  background-color: var(--color-primary-dark);
+  background-color: #8c7ae6; /* Color más saturado */
+  box-shadow: 0 6px 15px rgba(108, 92, 231, 0.5); /* Sombra más prominente */
+  transform: translateY(-2px); /* Efecto de elevación */
+}
+
+.back-button:active {
+  transform: translateY(1px); /* Efecto de presión */
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.4);
 }
 
 @media (max-width: var(--breakpoint-md)) {
