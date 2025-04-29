@@ -4,7 +4,6 @@ import { fromEvent } from 'rxjs'
 import { debounceTime, map, filter, distinctUntilChanged } from 'rxjs/operators'
 import { fetchProducts } from '../../services/productService'
 import { ProductCard } from '../../components/ProductCard/index.jsx'
-import logger from '../../utils/logger'
 import './style.css'
 
 export function Home() {
@@ -12,8 +11,10 @@ export function Home() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [showSuggestions, setShowSuggestions] = useState(false)
   const [filteredProducts, setFilteredProducts] = useState([])
   const searchInputRef = useRef(null)
+  const suggestionsRef = useRef(null)
   const productsRef = useRef(products)
   const location = useLocation()
 
@@ -28,7 +29,7 @@ export function Home() {
         setProducts(data)
         setFilteredProducts(data)
       } catch (err) {
-        logger.error('Error al cargar productos:', err)
+        console.error('Error al cargar productos:', err)
         setError('Error al cargar los productos')
       } finally {
         setLoading(false)
@@ -61,14 +62,44 @@ export function Home() {
 
     const subscription = inputObservable.subscribe(term => {
       setSearchTerm(term)
-      const filtered = filterProductsByTerm(term)
-      setFilteredProducts(filtered)
+
+      if (!term.trim()) {
+        setFilteredProducts(productsRef.current)
+        setShowSuggestions(false)
+      } else {
+        const filtered = filterProductsByTerm(term)
+        setFilteredProducts(filtered)
+        setShowSuggestions(true)
+      }
     })
 
     return () => {
       subscription.unsubscribe()
     }
   }, [filterProductsByTerm])
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target) &&
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target)
+      ) {
+        setShowSuggestions(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  function handleSuggestionClick(productId) {
+    setShowSuggestions(false)
+    location.route(`/product/${productId}`)
+  }
 
   function clearSearch() {
     if (searchInputRef.current) {
@@ -79,13 +110,19 @@ export function Home() {
   }
 
   function handleKeyDown(e) {
-    if (e.key === 'Enter' && filteredProducts.length > 0) {
-      location.route(`/product/${filteredProducts[0].id}`)
+    if (e.key === 'Escape') {
+      setShowSuggestions(false)
+    } else if (e.key === 'Enter' && filteredProducts.length > 0) {
+      handleSuggestionClick(filteredProducts[0].id)
     }
   }
 
+  function handleShowAllResults() {
+    setShowSuggestions(false)
+  }
+
   return (
-    <div className="product-list-page">
+    <div className="product-list-page" onClick={() => setShowSuggestions(false)}>
       <div className="search-container">
         <div className="search-input-wrapper">
           <input
@@ -93,6 +130,7 @@ export function Home() {
             type="text"
             placeholder="Buscar por marca o modelo..."
             onKeyDown={handleKeyDown}
+            onClick={e => e.stopPropagation()}
             className="search-input"
             autoComplete="off"
           />
@@ -107,6 +145,50 @@ export function Home() {
               ×
             </button>
           )}
+
+          {showSuggestions && searchTerm && (
+            <div
+              className="search-suggestions"
+              ref={suggestionsRef}
+              onClick={e => e.stopPropagation()}
+            >
+              {filteredProducts.slice(0, 5).map(product => (
+                <div
+                  key={product.id}
+                  className="suggestion-item"
+                  onClick={() => handleSuggestionClick(product.id)}
+                >
+                  <div className="suggestion-image">
+                    <img
+                      src={product.imgUrl || 'https://via.placeholder.com/50'}
+                      alt={product.model}
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="suggestion-content">
+                    <div className="suggestion-title">
+                      {product.brand} {product.model}
+                    </div>
+                  </div>
+                  <div className="suggestion-price">
+                    {product.price ? `${product.price}€` : 'Consultar precio'}
+                  </div>
+                </div>
+              ))}
+
+              {filteredProducts.length > 5 && (
+                <div className="show-all-results" onClick={handleShowAllResults}>
+                  Mostrar todos los resultados ({filteredProducts.length})
+                </div>
+              )}
+
+              {filteredProducts.length === 0 && (
+                <div className="no-suggestions">
+                  No se encontraron productos que coincidan con "{searchTerm}"
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -114,7 +196,7 @@ export function Home() {
 
       {error && <p className="error-message">{error}</p>}
 
-      {!loading && !error && (
+      {!loading && !error && (!showSuggestions || !searchTerm) && (
         <>
           <div className="results-count">
             {searchTerm

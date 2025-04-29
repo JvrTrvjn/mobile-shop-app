@@ -1,5 +1,6 @@
 import { useState } from 'preact/hooks'
 import { useCart } from '../../context/CartContext'
+import { useToast } from '../../context/ToastContext'
 import './style.css'
 
 /**
@@ -13,29 +14,22 @@ import './style.css'
 export function AddToCartButton({ product, selectedColor, selectedStorage }) {
   const [quantity, setQuantity] = useState(1)
   const [isAdding, setIsAdding] = useState(false)
-  const [addSuccess, setAddSuccess] = useState(false)
-  const [error, setError] = useState(null)
   const { addToCart } = useCart()
+  const toast = useToast()
 
   const handleAddToCart = async () => {
     if (!selectedColor || !selectedStorage) {
-      setError('Por favor, selecciona color y almacenamiento')
+      toast.warning('Por favor, selecciona color y almacenamiento')
       return
     }
 
     setIsAdding(true)
-    setError(null)
 
     try {
       await addToCart(product, quantity, selectedColor, selectedStorage)
-
-      setAddSuccess(true)
-
-      setTimeout(() => {
-        setAddSuccess(false)
-      }, 3000)
+      toast.success(`¡${product.brand} ${product.model} añadido correctamente!`)
     } catch (error) {
-      setError(`Error al añadir al carrito: ${error.message}`)
+      toast.error(`Error al añadir al carrito: ${error.message}`)
     } finally {
       setIsAdding(false)
     }
@@ -55,10 +49,6 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
 
   return (
     <div className="add-to-cart-container">
-      {error && <div className="cart-error">{error}</div>}
-
-      {addSuccess && <div className="cart-success">¡Producto añadido correctamente!</div>}
-
       <div className="quantity-selector">
         <button
           className="quantity-btn"

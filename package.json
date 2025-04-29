@@ -12,6 +12,7 @@
   "dependencies": {
     "preact": "^10.25.3",
     "preact-iso": "^2.9.1",
+    "react-toastify": "^11.0.5",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
