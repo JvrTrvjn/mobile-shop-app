@@ -15,29 +15,47 @@ export function ColorSelector({ colors, onColorSelect, selectedColor }) {
 
   const getColorStyle = (colorCode, colorName) => {
     // Mapa de nombres comunes de colores a valores CSS
-    const nameToColor = {
-      'black': 'black',
-      'white': 'white',
-      'red': 'red',
-      'blue': 'blue',
-      'green': 'green',
-      'yellow': 'yellow',
-      'purple': 'purple',
-      'gray': 'gray',
-      'silver': 'silver',
-      'gold': 'gold'
+    const colorMap = {
+      black: 'black',
+      white: 'white',
+      red: 'red',
+      blue: 'blue',
+      green: 'green',
+      yellow: 'yellow',
+      purple: 'purple',
+      gray: 'gray',
+      silver: 'silver',
+      gold: 'gold',
+      burgundy: 'darkred',
+      titan: 'black',
+      navy: 'navy',
+      rose: 'pink',
+      midnight: 'midnightblue',
+      sky: 'skyblue',
     }
-    
-    // 1. Intenta obtener el color por nombre si está disponible
-    if (colorName) {
-      const lowerCaseName = colorName.toLowerCase();
-      if (nameToColor[lowerCaseName]) {
-        return nameToColor[lowerCaseName];
+
+    if (!colorName) return '#cccccc'
+
+    const lowerCaseName = colorName.toLowerCase()
+
+    if (colorMap[lowerCaseName]) {
+      return colorMap[lowerCaseName]
+    }
+
+    const words = lowerCaseName.split(' ')
+    for (const word of words) {
+      if (colorMap[word]) {
+        return colorMap[word]
       }
     }
-    
-    // 2. Si no se encuentra por nombre, usar un color por defecto
-    return '#cccccc';
+
+    for (const key of Object.keys(colorMap)) {
+      if (lowerCaseName.includes(key)) {
+        return colorMap[key]
+      }
+    }
+
+    return '#cccccc'
   }
 
   return (
@@ -48,7 +66,10 @@ export function ColorSelector({ colors, onColorSelect, selectedColor }) {
           className={`color-option ${selectedColor === color.code.toString() ? 'selected' : ''}`}
           onClick={() => onColorSelect(color.code.toString())}
         >
-          <div className="color-swatch" style={{ backgroundColor: getColorStyle(color.code, color.name) }} />
+          <div
+            className="color-swatch"
+            style={{ backgroundColor: getColorStyle(color.code, color.name) }}
+          />
           <span className="color-name">{color.name}</span>
         </div>
       ))}
