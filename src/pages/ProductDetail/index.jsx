@@ -171,119 +171,121 @@ export function ProductDetail({ id: propId }) {
   return (
     <div className="product-detail-container">
       <div className="product-detail-content">
-        <div className="product-image-column">
-          <div className="product-image-container">
-            {product.imgUrl ? (
-              <img
-                src={product.imgUrl}
-                alt={`${product.brand} ${product.model}`}
-                className="product-image"
+        <div className="product-detail-content-inner">
+          <div className="product-image-column">
+            <div className="product-image-container">
+              {product.imgUrl ? (
+                <img
+                  src={product.imgUrl}
+                  alt={`${product.brand} ${product.model}`}
+                  className="product-image"
+                />
+              ) : (
+                <div className="product-image-placeholder">
+                  <span>{t('productDetail.noImage')}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="product-info-column">
+            <div className="product-header">
+              <h1 className="product-title">
+                {product.brand} {product.model}
+              </h1>
+              <div className="product-price">
+                {product.price ? `${product.price}€` : t('productDetail.unavailablePrice')}
+              </div>
+            </div>
+
+            <div className="product-specs">
+              <h2 className="specs-title">{t('productDetail.specifications')}</h2>
+              <div className="specs-grid">
+                <div className="spec-item">
+                  <span className="spec-label">{t('productDetail.brand')}:</span>
+                  <span className="spec-value">{product.brand || t('productDetail.notSpecified')}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">{t('productDetail.cpu')}:</span>
+                  <span className="spec-value">{product.cpu || t('productDetail.notSpecified')}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">{t('productDetail.ram')}:</span>
+                  <span className="spec-value">{product.ram || t('productDetail.notSpecified')}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">{t('productDetail.os')}:</span>
+                  <span className="spec-value">{product.os || t('productDetail.notSpecified')}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">{t('productDetail.display')}:</span>
+                  <span className="spec-value">
+                    {product.displaySize || product.display?.size || t('productDetail.notSpecified')}
+                  </span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">{t('productDetail.battery')}:</span>
+                  <span className="spec-value">{product.battery || t('productDetail.notSpecified')}</span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">{t('productDetail.cameras')}:</span>
+                  <span className="spec-value">
+                    {Array.isArray(product.primaryCamera)
+                      ? product.primaryCamera.join(', ')
+                      : product.primaryCamera || t('productDetail.notSpecified')}
+                  </span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">{t('productDetail.dimensions')}:</span>
+                  <span className="spec-value">
+                    {product.dimentions || product.dimensions || t('productDetail.notSpecified')}
+                  </span>
+                </div>
+                <div className="spec-item">
+                  <span className="spec-label">{t('productDetail.weight')}:</span>
+                  <span className="spec-value">
+                    {product.weight ? `${product.weight} g` : t('productDetail.notSpecified')}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="product-actions">
+              <h2 className="actions-title">{t('productDetail.selectOptions')}</h2>
+
+              <div className="option-selector">
+                <h3 className="selector-label">{t('productDetail.colors')}:</h3>
+                {colorOptions.length > 0 ? (
+                  <ColorSelector
+                    colors={colorOptions}
+                    selectedColor={selectedColor}
+                    onColorSelect={handleColorSelect}
+                  />
+                ) : (
+                  <div className="no-options">{t('productDetail.noColorOptions')}</div>
+                )}
+              </div>
+
+              <div className="option-selector">
+                <h3 className="selector-label">{t('productDetail.storage')}:</h3>
+                {storageOptions.length > 0 ? (
+                  <StorageSelector
+                    storages={storageOptions}
+                    options={storageOptions}
+                    selectedStorage={selectedStorage}
+                    onStorageSelect={handleStorageSelect}
+                  />
+                ) : (
+                  <div className="no-options">{t('productDetail.noStorageOptions')}</div>
+                )}
+              </div>
+
+              <AddToCartButton
+                product={product}
+                selectedColor={selectedColor}
+                selectedStorage={selectedStorage}
               />
-            ) : (
-              <div className="product-image-placeholder">
-                <span>{t('productDetail.noImage')}</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="product-info-column">
-          <div className="product-header">
-            <h1 className="product-title">
-              {product.brand} {product.model}
-            </h1>
-            <div className="product-price">
-              {product.price ? `${product.price}€` : t('productDetail.unavailablePrice')}
             </div>
-          </div>
-
-          <div className="product-specs">
-            <h2 className="specs-title">{t('productDetail.specifications')}</h2>
-            <div className="specs-grid">
-              <div className="spec-item">
-                <span className="spec-label">{t('productDetail.brand')}:</span>
-                <span className="spec-value">{product.brand || t('productDetail.notSpecified')}</span>
-              </div>
-              <div className="spec-item">
-                <span className="spec-label">{t('productDetail.cpu')}:</span>
-                <span className="spec-value">{product.cpu || t('productDetail.notSpecified')}</span>
-              </div>
-              <div className="spec-item">
-                <span className="spec-label">{t('productDetail.ram')}:</span>
-                <span className="spec-value">{product.ram || t('productDetail.notSpecified')}</span>
-              </div>
-              <div className="spec-item">
-                <span className="spec-label">{t('productDetail.os')}:</span>
-                <span className="spec-value">{product.os || t('productDetail.notSpecified')}</span>
-              </div>
-              <div className="spec-item">
-                <span className="spec-label">{t('productDetail.display')}:</span>
-                <span className="spec-value">
-                  {product.displaySize || product.display?.size || t('productDetail.notSpecified')}
-                </span>
-              </div>
-              <div className="spec-item">
-                <span className="spec-label">{t('productDetail.battery')}:</span>
-                <span className="spec-value">{product.battery || t('productDetail.notSpecified')}</span>
-              </div>
-              <div className="spec-item">
-                <span className="spec-label">{t('productDetail.cameras')}:</span>
-                <span className="spec-value">
-                  {Array.isArray(product.primaryCamera)
-                    ? product.primaryCamera.join(', ')
-                    : product.primaryCamera || t('productDetail.notSpecified')}
-                </span>
-              </div>
-              <div className="spec-item">
-                <span className="spec-label">{t('productDetail.dimensions')}:</span>
-                <span className="spec-value">
-                  {product.dimentions || product.dimensions || t('productDetail.notSpecified')}
-                </span>
-              </div>
-              <div className="spec-item">
-                <span className="spec-label">{t('productDetail.weight')}:</span>
-                <span className="spec-value">
-                  {product.weight ? `${product.weight} g` : t('productDetail.notSpecified')}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="product-actions">
-            <h2 className="actions-title">{t('productDetail.selectOptions')}</h2>
-
-            <div className="option-selector">
-              <h3 className="selector-label">{t('productDetail.colors')}:</h3>
-              {colorOptions.length > 0 ? (
-                <ColorSelector
-                  colors={colorOptions}
-                  selectedColor={selectedColor}
-                  onColorSelect={handleColorSelect}
-                />
-              ) : (
-                <div className="no-options">{t('productDetail.noColorOptions')}</div>
-              )}
-            </div>
-
-            <div className="option-selector">
-              <h3 className="selector-label">{t('productDetail.storage')}:</h3>
-              {storageOptions.length > 0 ? (
-                <StorageSelector
-                  storages={storageOptions}
-                  options={storageOptions}
-                  selectedStorage={selectedStorage}
-                  onStorageSelect={handleStorageSelect}
-                />
-              ) : (
-                <div className="no-options">{t('productDetail.noStorageOptions')}</div>
-              )}
-            </div>
-
-            <AddToCartButton
-              product={product}
-              selectedColor={selectedColor}
-              selectedStorage={selectedStorage}
-            />
           </div>
         </div>
       </div>
