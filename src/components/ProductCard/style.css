@@ -1,9 +1,9 @@
 .product-card {
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
-  background-color: white;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  background-color: var(--color-background);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -12,7 +12,7 @@
 
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
 }
 
 .product-image {
@@ -20,8 +20,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
-  background-color: #f8f9fa;
+  padding: var(--spacing-md);
+  background-color: var(--color-light-background);
 }
 
 .product-image img {
@@ -33,48 +33,48 @@
 .product-image-placeholder {
   width: 150px;
   height: 150px;
-  background-color: #e9ecef;
-  border-radius: 4px;
+  background-color: var(--color-border);
+  border-radius: var(--border-radius-sm);
 }
 
 .product-info {
-  padding: 16px;
+  padding: var(--spacing-md);
   flex-grow: 1;
   display: flex;
   flex-direction: column;
 }
 
 .product-brand {
-  margin: 0 0 8px 0;
-  font-size: 1.2rem;
-  color: #343a40;
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-heading);
 }
 
 .product-model {
-  margin: 0 0 8px 0;
-  color: #6c757d;
-  font-size: 1rem;
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-light-text);
+  font-size: var(--font-size-sm);
 }
 
 .product-price {
-  margin: 0 0 16px 0;
-  font-weight: bold;
-  font-size: 1.1rem;
-  color: #4a90e2;
+  margin: 0 0 var(--spacing-md) 0;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+  color: var(--color-primary);
 }
 
 .product-detail-button {
   margin-top: auto;
-  background-color: #4a90e2;
+  background-color: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.2s;
+  font-size: var(--font-size-xs);
+  transition: background-color var(--transition-fast);
 }
 
 .product-detail-button:hover {
-  background-color: #3a7bc8;
+  background-color: var(--color-primary-dark);
 }

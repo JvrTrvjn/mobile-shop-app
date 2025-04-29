@@ -46,6 +46,7 @@
     "showAllResults": "Mostrar todos los resultados ({count})"
   },
   "cart": {
+    "addedSuccessfully": "Producto añadido correctamente",
     "added": "¡{brand} {model} añadido correctamente!",
     "error": "No se pudo añadir el producto al carrito. Intenta más tarde.",
     "selectOptions": "Selecciona color y almacenamiento",

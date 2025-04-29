@@ -1,7 +1,7 @@
 .app-header {
-  background-color: #f8f9fa;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 12px 20px;
+  background-color: var(--color-light-background);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -11,7 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
+  max-width: var(--breakpoint-xl);
   margin: 0 auto;
 }
 
@@ -21,40 +21,40 @@
 
 .app-title {
   margin: 0;
-  font-size: 1.5rem;
-  color: #4a90e2;
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
 }
 
 .breadcrumb-container {
   flex-grow: 1;
-  margin-left: 20px;
+  margin-left: var(--spacing-lg);
 }
 
 .breadcrumb {
   display: flex;
   align-items: center;
-  font-size: 0.9rem;
+  font-size: var(--font-size-xs);
 }
 
 .breadcrumb-home {
-  color: #4a90e2;
+  color: var(--color-primary);
   cursor: pointer;
 }
 
 .breadcrumb-separator {
-  margin: 0 8px;
-  color: #adb5bd;
+  margin: 0 var(--spacing-sm);
+  color: var(--color-lighter-text);
 }
 
 .breadcrumb-current {
-  color: #6c757d;
+  color: var(--color-light-text);
 }
 
 .cart-container {
-  margin-left: 20px;
+  margin-left: var(--spacing-lg);
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--breakpoint-md)) {
   .breadcrumb-container {
     display: none;
   }

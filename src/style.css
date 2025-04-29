@@ -1,11 +1,102 @@
 :root {
+	/* Tipografía */
 	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 	line-height: 1.5;
 	font-weight: 400;
 
-	color: #222;
-	background-color: #ffffff;
+	/* Colores base */
+	--color-text: #222;
+	--color-background: #ffffff;
+	--color-dark-background: #1a1a1a;
+	--color-dark-text: #ccc;
 
+	/* Colores principales */
+	--color-primary: #4a90e2;
+	--color-primary-dark: #3a7bc8;
+	--color-secondary: #007bff;
+	--color-secondary-dark: #0069d9;
+
+	/* Colores de estado */
+	--color-success: #28a745;
+	--color-success-light: #d4edda;
+	--color-success-dark: #155724;
+	--color-success-border: #c3e6cb;
+
+	--color-error: #dc3545;
+	--color-error-light: #f8d7da;
+	--color-error-dark: #721c24;
+	--color-error-border: #f5c6cb;
+
+	--color-warning: #ffc107;
+	--color-warning-light: #fff3cd;
+	--color-warning-dark: #856404;
+	--color-warning-border: #ffeeba;
+
+	--color-info: #17a2b8;
+	--color-info-light: #d1ecf1;
+	--color-info-dark: #0c5460;
+	--color-info-border: #bee5eb;
+
+	/* Colores de interfaz */
+	--color-heading: #333;
+	--color-body: #555;
+	--color-light-text: #6c757d;
+	--color-lighter-text: #adb5bd;
+	--color-accent: #e63946;
+	--color-disabled: #6c757d;
+	
+	/* Colores de fondo y bordes */
+	--color-light-background: #f8f9fa;
+	--color-border: #e9ecef;
+	--color-divider: #ddd;
+	--color-card-background: #f7f7f7;
+
+	/* Espaciados */
+	--spacing-xs: 4px;
+	--spacing-sm: 8px;
+	--spacing-md: 16px;
+	--spacing-lg: 20px;
+	--spacing-xl: 30px;
+
+	/* Bordes */
+	--border-radius-sm: 4px;
+	--border-radius-md: 8px;
+	--border-radius-lg: 10px;
+
+	/* Sombras */
+	--shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+	--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+	--shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.1);
+
+	/* Tamaños de fuente */
+	--font-size-xs: 0.9rem;
+	--font-size-sm: 1rem;
+	--font-size-md: 1.1rem;
+	--font-size-lg: 1.2rem;
+	--font-size-xl: 1.5rem;
+	--font-size-xxl: 2rem;
+
+	/* Pesos de fuente */
+	--font-weight-normal: 400;
+	--font-weight-medium: 500;
+	--font-weight-bold: 600;
+	--font-weight-bolder: 700;
+
+	/* Tamaños de componentes */
+	--button-height: 44px;
+	--input-height: 40px;
+
+	/* Transiciones */
+	--transition-fast: 0.2s;
+	--transition-normal: 0.3s;
+
+	/* Breakpoints */
+	--breakpoint-sm: 480px;
+	--breakpoint-md: 768px;
+	--breakpoint-lg: 992px;
+	--breakpoint-xl: 1200px;
+
+	/* Configuración de renderizado */
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
@@ -15,6 +106,8 @@
 
 body {
 	margin: 0;
+	color: var(--color-text);
+	background-color: var(--color-background);
 }
 
 #app {
@@ -31,7 +124,7 @@ body {
 }
 
 .main-content {
-	padding: 0 20px;
+	padding: 0 var(--spacing-lg);
 	flex: 1;
 }
 
@@ -43,12 +136,12 @@ main {
 	flex: auto;
 	display: flex;
 	align-items: center;
-	max-width: 1280px;
+	max-width: var(--breakpoint-xl);
 	margin: 0 auto;
 	text-align: center;
 }
 
-@media (max-width: 639px) {
+@media (max-width: var(--breakpoint-sm)) {
 	main {
 		margin: 2rem;
 	}
@@ -56,7 +149,7 @@ main {
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		color: #ccc;
-		background-color: #1a1a1a;
+		color: var(--color-dark-text);
+		background-color: var(--color-dark-background);
 	}
 }

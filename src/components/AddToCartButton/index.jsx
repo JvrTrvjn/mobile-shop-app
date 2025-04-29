@@ -31,7 +31,7 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
 
     try {
       await addToCart(product, quantity, selectedColor, selectedStorage)
-      toast.success(`${product.brand} ${product.model} añadido correctamente!`, {
+      toast.success(`${t('cart.addedSuccessfully')}  ${product.brand} ${product.model}`, {
         toastId: `add-success-${product.id}-${selectedColor}-${selectedStorage}`,
       })
     } catch (error) {

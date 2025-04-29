@@ -46,6 +46,7 @@
     "showAllResults": "Show all results ({count})"
   },
   "cart": {
+    "addedSuccessfully": "Product added successfully",
     "added": "{brand} {model} successfully added!",
     "error": "Could not add product to cart. Please try again later.",
     "selectOptions": "Please select color and storage",
