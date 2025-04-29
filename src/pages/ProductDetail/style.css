@@ -210,14 +210,15 @@
 
 
 .option-selector {
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 8px;
 }
 
 .selector-label {
   font-size: 0.85rem;
   color: var(--color-heading);
-  margin: 0 0 var(--spacing-xs) 0;
+  margin: 0 0 4px 0;
   font-weight: var(--font-weight-medium);
+  display: block;
 }
 
 .no-options {
@@ -265,5 +266,12 @@
   .product-image-placeholder {
     min-height: 200px;
     max-height: 250px;
+  }
+
+  /* Mantener selectores horizontales */
+  .color-selector,
+  .storage-selector {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
