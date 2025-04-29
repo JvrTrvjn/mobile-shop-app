@@ -1,26 +1,31 @@
 import { useEffect, useState } from 'preact/hooks'
 import { useCart } from '../../context/CartContext'
 import { getCartCount } from '../../services/productService'
+import logger from '../../utils/logger'
 import './style.css'
 
 /**
  * Componente CartCounter que muestra el número de artículos en el carrito
  * @returns {Object} El componente CartCounter renderizado
  */
-
 export function CartCounter() {
   const { state: cartState } = useCart()
   const [count, setCount] = useState(0)
 
+  // Sincronizamos con el estado del contexto del carrito
   useEffect(() => {
     setCount(cartState.count)
+    logger.log('CartCounter sincronizado con contexto:', cartState.count)
   }, [cartState.count])
 
+  // Escuchamos eventos de actualización del carrito para asegurar sincronización
   useEffect(() => {
     const handleCartUpdate = () => {
-      const updatedCount = getCartCount()
-      if (cartState.count !== updatedCount) {
-        setCount(updatedCount)
+      const storedCount = getCartCount()
+      logger.log('CartCounter: evento cartUpdated detectado, contador:', storedCount)
+      
+      if (count !== storedCount) {
+        setCount(storedCount)
       }
     }
 
@@ -29,7 +34,7 @@ export function CartCounter() {
     return () => {
       window.removeEventListener('cartUpdated', handleCartUpdate)
     }
-  }, [cartState.count])
+  }, [count])
 
   return (
     <div className="cart-counter">

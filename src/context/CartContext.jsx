@@ -1,6 +1,7 @@
 import { createContext } from 'preact'
 import { useContext, useReducer, useEffect } from 'preact/hooks'
 import { getCartCount, updateCartCount, addProductToCart } from '../services/productService'
+import logger from '../utils/logger'
 
 const initialState = {
   items: [],
@@ -120,9 +121,24 @@ const cartReducer = (state, action) => {
     }
 
     case CartActionTypes.SYNC_CART_COUNT: {
+      const serverCount = action.payload.count
+
+      let currentLocalCount
+      try {
+        const storedCount = localStorage.getItem('cartCount')
+        currentLocalCount = storedCount ? parseInt(storedCount, 10) : 0
+      } catch (e) {
+        currentLocalCount = state.count
+        logger.error('Error al leer cartCount de localStorage:', e)
+      }
+
+      const finalCount = Math.max(serverCount, currentLocalCount)
+
+      updateCartCount(finalCount)
+
       return {
         ...state,
-        count: action.payload.count,
+        count: finalCount,
       }
     }
 
@@ -142,6 +158,8 @@ export function CartProvider({ children }) {
       type: CartActionTypes.INITIALIZE_CART,
       payload: { count },
     })
+
+    logger.log('Inicializando carrito con contador:', count)
   }, [])
 
   const cartContextValue = {
@@ -161,28 +179,37 @@ export function CartProvider({ children }) {
           storageCode,
         }
 
+        const countBeforeAdd = cartState.count
+        logger.log('Contador antes de añadir:', countBeforeAdd)
+
         dispatch({
           type: CartActionTypes.ADD_TO_CART,
           payload: { product, quantity, selectedColor, selectedStorage },
         })
 
-        const response = await addProductToCart(cartData)
+        const addedQuantity = quantity
+        logger.log('Cantidad añadida:', addedQuantity)
 
-        if (response && typeof response.count === 'number' && response.count >= cartState.count) {
-          updateCartCount(response.count)
+        const response = await addProductToCart(cartData)
+        logger.log('Respuesta de API al añadir al carrito:', response)
+
+        if (response && typeof response.count === 'number') {
+          const expectedMinCount = countBeforeAdd + addedQuantity
+
+          const finalCount = Math.max(response.count, expectedMinCount)
+          logger.log('Contador final después de sincronizar:', finalCount)
+
+          updateCartCount(finalCount)
 
           dispatch({
             type: CartActionTypes.SYNC_CART_COUNT,
-            payload: { count: response.count },
+            payload: { count: finalCount },
           })
         }
 
         return response
       } catch (error) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.error('Error detallado en addToCart:', error)
-        }
-
+        logger.error('Error detallado en addToCart:', error)
         throw new Error('No se pudo añadir el producto al carrito. Inténtalo de nuevo.')
       }
     },
