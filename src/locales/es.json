@@ -6,7 +6,9 @@
   },
   "header": {
     "title": "Mobile Shop",
-    "home": "Home"
+    "home": "Home",
+    "ProductDetails": "Detalles del producto",
+    "NotFound": "Página no encontrada"
   },
   "productDetail": {
     "addToCart": "Detalles del producto",

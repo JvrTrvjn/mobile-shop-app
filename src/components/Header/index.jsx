@@ -39,7 +39,7 @@ export function Header() {
               </span>
               <span className="breadcrumb-separator">/</span>
               <span className="breadcrumb-current">
-                {currentPath.includes('/product/') ? 'Product Details' : 'Not Found'}
+                {currentPath.includes('/product/') ? t('ProductDetails') : t('NotFound')}
               </span>
             </div>
           )}
