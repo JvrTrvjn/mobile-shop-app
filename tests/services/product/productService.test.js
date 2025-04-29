@@ -209,3 +209,78 @@ describe('Product Service', () => {
     })
   })
 })
+
+describe('Product Service - Tests Simplificados', () => {
+  const mockStorage = {}
+  const simpleStorageMock = {
+    getItem: vi.fn(key => mockStorage[key] || null),
+    setItem: vi.fn((key, value) => {
+      mockStorage[key] = value.toString()
+    }),
+    clear: vi.fn(() => {
+      Object.keys(mockStorage).forEach(key => delete mockStorage[key])
+    }),
+  }
+
+  const testProducts = [
+    { id: '1', brand: 'Apple', model: 'iPhone 13', price: 999 },
+    { id: '2', brand: 'Samsung', model: 'Galaxy S21', price: 899 },
+  ]
+
+  const testProductDetail = {
+    id: '1',
+    brand: 'Apple',
+    model: 'iPhone 13',
+    price: 999,
+    options: {
+      colors: [{ code: 1000, name: 'Negro' }],
+      storages: [{ code: 64, name: '64GB' }],
+    },
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    Object.keys(mockStorage).forEach(key => delete mockStorage[key])
+    Object.defineProperty(global, 'localStorage', {
+      value: simpleStorageMock,
+      writable: true,
+    })
+
+    vi.mocked(cacheService.getFromCache).mockImplementation(() => null)
+    vi.mocked(apiService.getProducts).mockResolvedValue(testProducts)
+    vi.mocked(apiService.getProductDetails).mockResolvedValue(testProductDetail)
+  })
+
+  it('fetchProducts recupera productos de la API cuando no hay caché', async () => {
+    vi.mocked(cacheService.getFromCache).mockReturnValue(null)
+
+    const products = await fetchProducts()
+
+    expect(cacheService.getFromCache).toHaveBeenCalledWith('products')
+    expect(apiService.getProducts).toHaveBeenCalled()
+    expect(products).toEqual(testProducts)
+  })
+
+  it('fetchProductDetails recupera detalles de la API cuando no hay caché', async () => {
+    vi.mocked(cacheService.getFromCache).mockReturnValue(null)
+
+    const product = await fetchProductDetails('1')
+
+    expect(cacheService.getFromCache).toHaveBeenCalledWith('product_1')
+    expect(apiService.getProductDetails).toHaveBeenCalledWith('1')
+    expect(product).toEqual(testProductDetail)
+  })
+
+  it('getCartCount y updateCartCount funcionan correctamente', () => {
+    simpleStorageMock.getItem.mockReturnValue(null)
+    expect(getCartCount()).toBe(0)
+
+    updateCartCount(3)
+
+    expect(simpleStorageMock.setItem).toHaveBeenCalledWith('cartCount', '3')
+
+    simpleStorageMock.getItem.mockReturnValue('3')
+
+    expect(getCartCount()).toBe(3)
+  })
+})

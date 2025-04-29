@@ -14,7 +14,6 @@ export function ColorSelector({ colors, onColorSelect, selectedColor }) {
   }
 
   const getColorStyle = (colorCode, colorName) => {
-    // Mapa de nombres comunes de colores a valores CSS
     const colorMap = {
       black: 'black',
       white: 'white',

@@ -12,13 +12,11 @@ export function CartCounter() {
   const { state: cartState } = useCart()
   const [count, setCount] = useState(0)
 
-  // Sincronizamos con el estado del contexto del carrito
   useEffect(() => {
     setCount(cartState.count)
     logger.log('CartCounter sincronizado con contexto:', cartState.count)
   }, [cartState.count])
 
-  // Escuchamos eventos de actualización del carrito para asegurar sincronización
   useEffect(() => {
     const handleCartUpdate = () => {
       const storedCount = getCartCount()

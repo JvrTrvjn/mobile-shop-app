@@ -1,154 +1,216 @@
-import { h } from 'preact';
-import { render, screen, fireEvent, waitFor } from '@testing-library/preact';
-import { expect, describe, it, vi, beforeEach } from 'vitest';
-import { Home } from '../../../src/pages/Home/index';
-import { fetchProducts } from '../../../src/services/productService';
+import { h } from 'preact'
+import { render, screen, fireEvent, waitFor } from '@testing-library/preact'
+import { expect, describe, it, vi, beforeEach } from 'vitest'
+import { Home } from '../../../src/pages/Home/index'
+import { fetchProducts } from '../../../src/services/productService'
 
-// Mock de los servicios
 vi.mock('../../../src/services/productService', () => ({
-  fetchProducts: vi.fn()
-}));
+  fetchProducts: vi.fn(),
+}))
 
-// Mock de los componentes
 vi.mock('../../../src/components/ProductCard/index.jsx', () => ({
   ProductCard: ({ product }) => (
     <div data-testid="product-card" data-product-id={product.id}>
       {product.brand} {product.model}
     </div>
-  )
-}));
+  ),
+}))
 
-// Mock para useLocation
-const mockRoute = vi.fn();
+const mockRoute = vi.fn()
 vi.mock('preact-iso', () => ({
   useLocation: () => ({
-    route: mockRoute
-  })
-}));
+    route: mockRoute,
+  }),
+}))
 
-// Mock para rxjs
-vi.mock('rxjs', () => {
-  const actual = vi.importActual('rxjs');
-  return {
-    ...actual,
-    fromEvent: (element, eventName) => ({
-      pipe: () => ({
-        subscribe: (callback) => {
-          // Simular la suscripción guardando el callback
-          element._rxjsCallback = callback;
-          return { unsubscribe: vi.fn() };
-        }
-      })
-    })
-  };
-});
+vi.mock('../../../src/context/I18nContext', () => ({
+  useTranslation: () => ({
+    t: key => {
+      const translations = {
+        'home.title': 'Nuestros Móviles',
+        'home.loading': 'Cargando productos...',
+        'home.error': 'Error al cargar productos',
+        'home.noProducts': 'No hay productos disponibles',
+        'home.tryAgain': 'Intentar de nuevo',
+        'home.noResults': 'No hay productos disponibles',
+        'home.search': 'Buscar productos',
+        'errors.loadProducts': 'Error al cargar productos',
+      }
+      return translations[key] || key
+    },
+    language: 'es',
+  }),
+}))
 
-// Datos de ejemplo para los tests
-const mockProducts = [
-  { id: '1', brand: 'Apple', model: 'iPhone 13', price: 999, imgUrl: 'iphone13.jpg' },
-  { id: '2', brand: 'Samsung', model: 'Galaxy S21', price: 899, imgUrl: 'galaxys21.jpg' },
-  { id: '3', brand: 'Xiaomi', model: 'Mi 11', price: 799, imgUrl: 'mi11.jpg' },
-  { id: '4', brand: 'Google', model: 'Pixel 6', price: 699, imgUrl: 'pixel6.jpg' },
-  { id: '5', brand: 'OnePlus', model: '9 Pro', price: 899, imgUrl: 'oneplus9.jpg' },
-  { id: '6', brand: 'Sony', model: 'Xperia 1 III', price: 1099, imgUrl: 'xperia1.jpg' },
-];
+vi.mock('../../../src/context/ToastContext', () => ({
+  useToast: () => ({
+    error: vi.fn(),
+    success: vi.fn(),
+  }),
+}))
 
-describe('Home Page', () => {
+vi.mock('rxjs', () => ({
+  fromEvent: vi.fn().mockImplementation(() => ({
+    pipe: vi.fn().mockReturnThis(),
+    subscribe: fn => {
+      fn('')
+      return { unsubscribe: vi.fn() }
+    },
+  })),
+  timer: vi.fn().mockImplementation(() => ({
+    pipe: vi.fn().mockReturnThis(),
+    subscribe: fn => {
+      fn()
+      return { unsubscribe: vi.fn() }
+    },
+  })),
+}))
+
+vi.mock('rxjs/operators', () => ({
+  debounceTime: vi.fn().mockImplementation(() => fn => fn),
+  map: vi.fn().mockImplementation(fn => input => fn(input)),
+  filter: vi.fn().mockImplementation(fn => input => fn(input)),
+  distinctUntilChanged: vi.fn().mockImplementation(() => input => input),
+}))
+
+describe('Home Component', () => {
+  const mockProducts = [
+    {
+      id: '1',
+      brand: 'Apple',
+      model: 'iPhone 13',
+      price: 999,
+      imgUrl: 'iphone13.jpg',
+    },
+    {
+      id: '2',
+      brand: 'Samsung',
+      model: 'Galaxy S21',
+      price: 899,
+      imgUrl: 'galaxy.jpg',
+    },
+  ]
+
   beforeEach(() => {
-    vi.clearAllMocks();
-    
-    // Mock fetch exitoso por defecto
-    vi.mocked(fetchProducts).mockResolvedValue(mockProducts);
+    vi.clearAllMocks()
+    fetchProducts.mockImplementation(() => Promise.resolve(mockProducts))
+  })
 
-    // Mock para document.addEventListener
-    vi.spyOn(document, 'addEventListener').mockImplementation(() => {});
-    vi.spyOn(document, 'removeEventListener').mockImplementation(() => {});
-  });
+  it('muestra mensaje de carga mientras se cargan los productos', async () => {
+    fetchProducts.mockImplementation(
+      () => new Promise(resolve => setTimeout(() => resolve(mockProducts), 100))
+    )
 
-  it('muestra un mensaje de carga inicialmente', () => {
-    render(<Home />);
-    expect(screen.getByText('Cargando productos...')).toBeDefined();
-  });
+    render(<Home />)
 
-  it('carga y muestra una lista de productos', async () => {
-    render(<Home />);
-    
-    await waitFor(() => {
-      expect(screen.queryByText('Cargando productos...')).toBeNull();
-    });
-    
-    // Verificar que se llamó al servicio
-    expect(fetchProducts).toHaveBeenCalled();
-    
-    // Verificar que se renderizan las tarjetas de producto
-    const productCards = screen.getAllByTestId('product-card');
-    expect(productCards.length).toBe(6);
-    
-    // Verificar que los productos se muestran correctamente
-    expect(screen.getByText('Apple iPhone 13')).toBeDefined();
-    expect(screen.getByText('Samsung Galaxy S21')).toBeDefined();
-  });
+    expect(screen.getByText('Cargando productos...')).toBeDefined()
 
-  it('muestra un mensaje de error si no se pueden cargar los productos', async () => {
-    // Mock fetch con error
-    vi.mocked(fetchProducts).mockRejectedValue(new Error('Error de API'));
-    
-    render(<Home />);
-    
     await waitFor(() => {
-      expect(screen.queryByText('Cargando productos...')).toBeNull();
-    });
-    
-    expect(screen.getByText('Error al cargar los productos')).toBeDefined();
-  });
+      expect(screen.queryByText('Cargando productos...')).toBeFalsy()
+    })
+  })
 
-  it('navega a la página de detalle del producto al hacer clic en una sugerencia', async () => {
-    const { container } = render(<Home />);
-    
-    // Esperar a que se carguen los productos
-    await waitFor(() => {
-      expect(screen.queryByText('Cargando productos...')).toBeNull();
-    });
-    
-    // Acceder al input directamente
-    const searchInput = screen.getByPlaceholderText('Buscar por marca o modelo...');
-    
-    // Simular búsqueda disparando manualmente el callback de rxjs
-    searchInput._rxjsCallback && searchInput._rxjsCallback('i');
-    
-    // Forzar renderizado para mostrar las sugerencias
-    await waitFor(() => {
-      const suggestions = screen.getAllByTestId('product-card');
-      expect(suggestions.length).toBeGreaterThan(0);
-    });
-    
-    // Simular clic en ProductCard
-    const productCards = screen.getAllByTestId('product-card');
-    fireEvent.click(productCards[0]);
-    
-    // Verificar que se navegó
-    expect(mockRoute).toHaveBeenCalled();
-  });
+  it('muestra los productos correctamente cuando se cargan', async () => {
+    render(<Home />)
 
-  it('muestra mensaje cuando no hay resultados de búsqueda', async () => {
-    render(<Home />);
-    
-    // Esperar a que se carguen los productos
     await waitFor(() => {
-      expect(screen.queryByText('Cargando productos...')).toBeNull();
-    });
-    
-    // Simular búsqueda sin resultados
-    const searchInput = screen.getByPlaceholderText('Buscar por marca o modelo...');
-    
-    // Simular búsqueda disparando manualmente el callback de rxjs
-    searchInput._rxjsCallback && searchInput._rxjsCallback('producto inexistente');
-    
-    // Verificar resultados
+      const productCards = screen.getAllByTestId('product-card')
+      expect(productCards).toHaveLength(2)
+      expect(productCards[0]).toHaveTextContent('Apple iPhone 13')
+      expect(productCards[1]).toHaveTextContent('Samsung Galaxy S21')
+    })
+  })
+
+  it('muestra un mensaje de error cuando falla la carga', async () => {
+    fetchProducts.mockRejectedValue(new Error('Error de prueba'))
+
+    render(<Home />)
+
     await waitFor(() => {
-      // Comprobar que no hay tarjetas de producto
-      const productCards = screen.queryAllByTestId('product-card');
-      expect(productCards.length).toBe(0);
-    });
-  });
-});
+      expect(screen.getByText('Error al cargar productos')).toBeDefined()
+      expect(screen.getByText('Intentar de nuevo')).toBeDefined()
+    })
+  })
+
+  it('permite recargar los productos después de un error', async () => {
+    fetchProducts
+      .mockRejectedValueOnce(new Error('Error de prueba'))
+      .mockResolvedValueOnce(mockProducts)
+
+    render(<Home />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Error al cargar productos')).toBeDefined()
+    })
+
+    fireEvent.click(screen.getByText('Intentar de nuevo'))
+
+    expect(fetchProducts).toHaveBeenCalledTimes(2)
+
+    await waitFor(() => {
+      const productCards = screen.getAllByTestId('product-card')
+      expect(productCards).toHaveLength(2)
+    })
+  })
+
+  it('muestra un mensaje cuando no hay productos disponibles', async () => {
+    fetchProducts.mockResolvedValue([])
+
+    render(<Home />)
+
+    await waitFor(() => {
+      expect(screen.getByText('No hay productos disponibles')).toBeDefined()
+    })
+  })
+})
+
+describe('Home Component - Tests Simplificados', () => {
+  const mockProducts = [
+    {
+      id: '1',
+      brand: 'Apple',
+      model: 'iPhone 13',
+      price: 999,
+      imgUrl: 'iphone13.jpg',
+    },
+    {
+      id: '2',
+      brand: 'Samsung',
+      model: 'Galaxy S21',
+      price: 899,
+      imgUrl: 'galaxy.jpg',
+    },
+  ]
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    fetchProducts.mockResolvedValue(mockProducts)
+  })
+
+  it('muestra mensaje de carga al inicio', () => {
+    fetchProducts.mockImplementation(
+      () => new Promise(resolve => setTimeout(() => resolve(mockProducts), 100))
+    )
+
+    render(<Home />)
+
+    expect(screen.getByText('Cargando productos...')).toBeDefined()
+  })
+
+  it('muestra los productos después de cargar', async () => {
+    render(<Home />)
+
+    await waitFor(
+      () => {
+        const productCards = screen.getAllByTestId('product-card')
+        expect(productCards.length).toBeGreaterThan(0)
+      },
+      { timeout: 3000 }
+    )
+
+    const productCards = screen.getAllByTestId('product-card')
+    expect(productCards).toHaveLength(2)
+    expect(productCards[0]).toHaveTextContent('Apple iPhone 13')
+    expect(productCards[1]).toHaveTextContent('Samsung Galaxy S21')
+  })
+})

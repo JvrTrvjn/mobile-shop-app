@@ -94,3 +94,38 @@ describe('ErrorService', () => {
     })
   })
 })
+
+describe('ErrorService - Tests Simplificados', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('maneja diferentes tipos de errores correctamente', () => {
+    const apiError = new Error('Error de API simplificado')
+    const apiResult = ErrorService.handleApiError(apiError, 'Error al comunicarse con el servidor')
+
+    expect(logger.error).toHaveBeenCalled()
+    expect(apiResult).toHaveProperty('message', 'Error al comunicarse con el servidor')
+    expect(apiResult).toHaveProperty('originalError', apiError)
+
+    vi.clearAllMocks()
+
+    const validationResult = ErrorService.handleValidationError(
+      'email',
+      'El formato del correo es incorrecto'
+    )
+
+    expect(logger.warn).toHaveBeenCalled()
+    expect(validationResult).toHaveProperty('field', 'email')
+    expect(validationResult.message).toContain('El formato del correo es incorrecto')
+
+    vi.clearAllMocks()
+
+    const cacheError = new Error('Error de caché simplificado')
+    const cacheResult = ErrorService.handleCacheError(cacheError, 'leer')
+
+    expect(logger.error).toHaveBeenCalled()
+    expect(cacheResult).toHaveProperty('message', 'Error en la caché durante leer')
+    expect(cacheResult).toHaveProperty('originalError', cacheError)
+  })
+})

@@ -39,7 +39,9 @@ export const saveToCache = (key, data) => {
     }
 
     localStorage.setItem(key, JSON.stringify(cacheObject))
-  } catch (error) {}
+  } catch (error) {
+    console.warn('Error al guardar datos en cache:', error.message)
+  }
 }
 
 /**
@@ -49,7 +51,8 @@ export const saveToCache = (key, data) => {
  * @returns {string} Clave de cache
  */
 export const getCacheKey = (resourceType, id = null) => {
-  return id ? `${resourceType}_${id}` : resourceType
+  const formattedId = id ? String(id).trim() : null
+  return formattedId ? `${resourceType}_${formattedId}` : resourceType
 }
 
 export const clearCache = () => {
@@ -64,5 +67,7 @@ export const clearCache = () => {
     }
 
     keysToRemove.forEach(key => localStorage.removeItem(key))
-  } catch (error) {}
+  } catch (error) {
+    console.warn('Error al limpiar la caché:', error.message)
+  }
 }

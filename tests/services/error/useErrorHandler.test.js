@@ -165,3 +165,74 @@ describe('useErrorHandler', () => {
     expect(mockToast.error).toHaveBeenCalled()
   })
 })
+
+describe('useErrorHandler - Tests Simplificados', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('notifica errores generales correctamente', () => {
+    let handler
+
+    render(
+      <TestComponent
+        onHookReady={h => {
+          handler = h
+        }}
+      />
+    )
+
+    expect(handler).toBeDefined()
+
+    const testError = new Error('Error de prueba simplificado')
+
+    handler.notifyError(testError)
+
+    expect(logger.error).toHaveBeenCalled()
+    expect(mockToast.error).toHaveBeenCalled()
+  })
+
+  it('maneja errores de API con un mensaje personalizado', () => {
+    let handler
+
+    render(
+      <TestComponent
+        onHookReady={h => {
+          handler = h
+        }}
+      />
+    )
+
+    const apiError = new Error('Error de API')
+
+    handler.notifyApiError(apiError, 'Error al comunicarse con el servidor')
+
+    expect(ErrorService.handleApiError).toHaveBeenCalledWith(
+      apiError,
+      'Error al comunicarse con el servidor'
+    )
+
+    expect(mockToast.error).toHaveBeenCalled()
+  })
+
+  it('maneja errores de validación en modo silencioso', () => {
+    let handler
+
+    render(
+      <TestComponent
+        onHookReady={h => {
+          handler = h
+        }}
+      />
+    )
+
+    handler.notifyValidationError('password', 'La contraseña es muy corta', { silent: true })
+
+    expect(ErrorService.handleValidationError).toHaveBeenCalledWith(
+      'password',
+      'La contraseña es muy corta'
+    )
+
+    expect(mockToast.warning).not.toHaveBeenCalled()
+  })
+})

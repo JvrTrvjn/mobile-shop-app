@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks'
 import { useCart } from '../../context/CartContext'
 import { useToast } from '../../context/ToastContext'
+import { useTranslation } from '../../context/I18nContext'
 import './style.css'
 
 /**
@@ -16,11 +17,22 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
   const [isAdding, setIsAdding] = useState(false)
   const { addToCart } = useCart()
   const toast = useToast()
+  const { t } = useTranslation()
+
+  // Verificar si el precio está disponible
+  const isPriceAvailable = Boolean(product?.price)
 
   const handleAddToCart = async () => {
     if (!selectedColor || !selectedStorage) {
-      toast.warning('Por favor, selecciona color y almacenamiento', {
+      toast.warning(t('cart.selectOptions'), {
         toastId: 'selection-warning',
+      })
+      return
+    }
+
+    if (!isPriceAvailable) {
+      toast.warning(t('cart.priceNotAvailable'), {
+        toastId: 'price-not-available-warning',
       })
       return
     }
@@ -29,11 +41,11 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
 
     try {
       await addToCart(product, quantity, selectedColor, selectedStorage)
-      toast.success(`¡${product.brand} ${product.model} añadido correctamente!`, {
+      toast.success(`${t('cart.addedSuccessfully')}  ${product.brand} ${product.model}`, {
         toastId: `add-success-${product.id}-${selectedColor}-${selectedStorage}`,
       })
     } catch (error) {
-      toast.error(`Error al añadir al carrito: ${error.message}`, {
+      toast.error(t('cart.error'), {
         toastId: `add-error-${product.id}`,
       })
     } finally {
@@ -59,31 +71,41 @@ export function AddToCartButton({ product, selectedColor, selectedStorage }) {
         <button
           className="quantity-btn"
           onClick={decrementQuantity}
-          disabled={quantity <= 1 || isAdding}
+          disabled={quantity <= 1 || isAdding || !isPriceAvailable}
         >
           -
         </button>
         <span className="quantity-value">{quantity}</span>
-        <button className="quantity-btn" onClick={incrementQuantity} disabled={isAdding}>
+        <button
+          className="quantity-btn"
+          onClick={incrementQuantity}
+          disabled={isAdding || !isPriceAvailable}
+        >
           +
         </button>
       </div>
 
       <button
-        className={`add-to-cart-btn ${isAdding ? 'adding' : ''} ${!selectedColor || !selectedStorage ? 'disabled' : ''}`}
+        className={`add-to-cart-btn ${isAdding ? 'adding' : ''} ${
+          !selectedColor || !selectedStorage || !isPriceAvailable ? 'disabled' : ''
+        }`}
         onClick={handleAddToCart}
-        disabled={isAdding || !selectedColor || !selectedStorage}
+        disabled={isAdding || !selectedColor || !selectedStorage || !isPriceAvailable}
+        data-testid="add-to-cart-button"
+        data-price-available={isPriceAvailable}
       >
-        {isAdding ? 'Añadiendo...' : 'Añadir al carrito'}
+        {isAdding ? t('productDetail.adding') : t('productDetail.add')}
       </button>
 
-      {(!selectedColor || !selectedStorage) && (
+      {(!selectedColor || !selectedStorage || !isPriceAvailable) && (
         <div className="selection-reminder">
-          {!selectedColor && !selectedStorage
-            ? 'Selecciona color y almacenamiento'
-            : !selectedColor
-              ? 'Selecciona un color'
-              : 'Selecciona almacenamiento'}
+          {!isPriceAvailable
+            ? t('cart.priceNotAvailable')
+            : !selectedColor && !selectedStorage
+              ? t('cart.selectOptions')
+              : !selectedColor
+                ? t('cart.selectColor')
+                : t('cart.selectStorage')}
         </div>
       )}
     </div>

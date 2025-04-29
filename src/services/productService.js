@@ -38,17 +38,29 @@ export const fetchProductDetails = async productId => {
     throw new Error('Invalid product ID')
   }
 
-  const cacheKey = getCacheKey('product', String(productId))
+  const validProductId = String(productId).trim()
+  console.log('Fetching product with ID:', validProductId)
+
+  const cacheKey = getCacheKey('product', validProductId)
+  console.log('Cache key generated:', cacheKey)
+
   const cachedProduct = getFromCache(cacheKey)
 
   if (cachedProduct) {
+    console.log('Product found in cache:', cachedProduct.brand, cachedProduct.model)
     return cachedProduct
   }
 
   try {
-    const product = await getProductDetails(productId)
+    const product = await getProductDetails(validProductId)
 
-    saveToCache(cacheKey, product)
+    if (product) {
+      console.log('Product received from API:', product.brand, product.model)
+      saveToCache(cacheKey, product)
+      console.log('Product saved to cache with key:', cacheKey)
+    } else {
+      console.error('Received null or undefined product from API')
+    }
 
     return product
   } catch (error) {
@@ -105,7 +117,5 @@ export const updateCartCount = count => {
     if (process.env.NODE_ENV !== 'production') {
       console.error('Error al actualizar la cantidad del carrito:', error)
     }
-
-    throw new Error('No se pudo actualizar la cantidad en el carrito. Intenta más tarde.')
   }
 }

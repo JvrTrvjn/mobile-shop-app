@@ -1,4 +1,5 @@
 import { useLocation } from 'preact-iso'
+import { useTranslation } from '../../context/I18nContext'
 import './style.css'
 
 /**
@@ -9,6 +10,7 @@ import './style.css'
  */
 export function ProductCard({ product }) {
   const location = useLocation()
+  const { t } = useTranslation()
 
   if (!product) {
     return null
@@ -21,7 +23,7 @@ export function ProductCard({ product }) {
   }
 
   return (
-    <div className="product-card" onClick={navigateToDetail}>
+    <div className="product-card" onClick={navigateToDetail} data-testid="product-card">
       <div className="product-image">
         {imgUrl ? (
           <img src={imgUrl} alt={`${brand} ${model}`} loading="lazy" />
@@ -33,7 +35,7 @@ export function ProductCard({ product }) {
       <div className="product-info">
         <h3 className="product-brand">{brand}</h3>
         <p className="product-model">{model}</p>
-        <p className="product-price">{price ? `${price}€` : 'Precio no disponible'}</p>
+        <p className="product-price">{price ? `${price}€` : t('productDetail.unavailablePrice')}</p>
 
         <button
           className="product-detail-button"
@@ -42,7 +44,7 @@ export function ProductCard({ product }) {
             navigateToDetail()
           }}
         >
-          Ver detalles
+          {t('productDetail.addToCart')}
         </button>
       </div>
     </div>

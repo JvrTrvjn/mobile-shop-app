@@ -2,8 +2,28 @@ import { render, screen, fireEvent } from '@testing-library/preact'
 import { expect, describe, it, vi, beforeEach } from 'vitest'
 import { Header } from '../../../src/components/Header/index'
 
+vi.mock('../../../src/context/I18nContext', () => ({
+  useTranslation: () => ({
+    t: key => {
+      const translations = {
+        'header.title': 'Mobile Shop',
+        'header.home': 'Home',
+        'header.ProductDetails': 'Product Details',
+        'header.NotFound': 'Not Found',
+      }
+      return translations[key] || key
+    },
+    language: 'es',
+    changeLanguage: vi.fn(),
+  }),
+}))
+
 vi.mock('../../../src/components/CartCounter', () => ({
   CartCounter: () => <div data-testid="cart-counter">Cart Counter</div>,
+}))
+
+vi.mock('../../../src/components/LanguageSelector', () => ({
+  LanguageSelector: () => <div data-testid="language-selector">Language Selector</div>,
 }))
 
 let mockUrl = '/'
@@ -66,5 +86,11 @@ describe('Header Component', () => {
     render(<Header />)
 
     expect(screen.getByTestId('cart-counter')).toBeDefined()
+  })
+
+  it('incluye el componente LanguageSelector', () => {
+    render(<Header />)
+
+    expect(screen.getByTestId('language-selector')).toBeDefined()
   })
 })

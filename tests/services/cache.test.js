@@ -159,3 +159,62 @@ describe('Cache Service', () => {
     })
   })
 })
+
+describe('Cache Service - Tests Simplificados', () => {
+  const mockStorage = {}
+
+  const simpleMockLocalStorage = {
+    getItem: vi.fn(key => mockStorage[key] || null),
+    setItem: vi.fn((key, value) => {
+      mockStorage[key] = value
+    }),
+    removeItem: vi.fn(key => {
+      delete mockStorage[key]
+    }),
+    clear: vi.fn(() => {
+      Object.keys(mockStorage).forEach(key => delete mockStorage[key])
+    }),
+    key: vi.fn(index => Object.keys(mockStorage)[index]),
+    get length() {
+      return Object.keys(mockStorage).length
+    },
+  }
+
+  const NOW = 1619766000000
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    Object.keys(mockStorage).forEach(key => delete mockStorage[key])
+    Object.defineProperty(global, 'localStorage', {
+      value: simpleMockLocalStorage,
+      writable: true,
+    })
+    vi.spyOn(Date, 'now').mockImplementation(() => NOW)
+  })
+
+  it('getFromCache devuelve null si no hay datos', () => {
+    const result = getFromCache('test-key')
+    expect(result).toBeNull()
+    expect(simpleMockLocalStorage.getItem).toHaveBeenCalledWith('test-key')
+  })
+
+  it('saveToCache guarda datos correctamente', () => {
+    const testData = { name: 'Test Product' }
+    saveToCache('test-key', testData)
+
+    expect(simpleMockLocalStorage.setItem).toHaveBeenCalled()
+
+    const firstCall = simpleMockLocalStorage.setItem.mock.calls[0]
+    const key = firstCall[0]
+    const value = JSON.parse(firstCall[1])
+
+    expect(key).toBe('test-key')
+    expect(value.data).toEqual(testData)
+    expect(value.expiry).toBeGreaterThan(NOW)
+  })
+
+  it('getCacheKey genera claves correctamente', () => {
+    expect(getCacheKey('products')).toBe('products')
+    expect(getCacheKey('product', '123')).toBe('product_123')
+  })
+})
