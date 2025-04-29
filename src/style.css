@@ -106,14 +106,27 @@
 
 body {
 	margin: 0;
+	padding: 0;
 	color: var(--color-text);
 	background-color: var(--color-background);
+	overflow-x: hidden; /* Previene el desplazamiento horizontal */
+	width: 100%; /* Asegura que el cuerpo ocupe exactamente el ancho de la ventana */
+	max-width: 100%; /* Limita el ancho máximo al 100% de la ventana */
+}
+
+html {
+	overflow-x: hidden; /* Previene el desplazamiento horizontal en el elemento raíz */
+	width: 100%;
+	max-width: 100%;
 }
 
 #app {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: hidden; /* Previene el desplazamiento horizontal en el contenedor principal */
 }
 
 .app-container {
