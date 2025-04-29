@@ -109,7 +109,41 @@ img:hover {
 
 .search-input-wrapper {
   position: relative;
+  width: 300px; /* Ancho fijo más proporcionado */
+  max-width: 100%;
+  transition: width 0.3s ease;
+}
+
+.search-input-wrapper:focus-within {
+  width: 350px; /* Se expande un poco al enfocar */
+}
+
+.search-input {
   width: 100%;
+  padding: 10px 40px 10px 40px; /* Espacio para icono de lupa a la izquierda y para botón de borrar a la derecha */
+  border: 1px solid #ddd;
+  border-radius: 20px; /* Bordes más redondeados */
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 3px 8px rgba(74, 144, 226, 0.15);
+  background-color: white;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 18px;
+  pointer-events: none; /* Para que no interfiera con clicks */
 }
 
 .clear-search {
@@ -120,12 +154,20 @@ img:hover {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: 18px;
   color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
 }
 
 .clear-search:hover {
   color: #555;
+  background-color: #eee;
 }
 
 .search-suggestions {
@@ -205,10 +247,7 @@ img:hover {
 .search-container {
   margin-bottom: 20px;
   position: relative;
-  z-index: 100; 
-}
-
-.search-input {
-  width: 100%;
-  padding-right: 40px; 
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end; /* Alinea la barra de búsqueda a la derecha */
 }

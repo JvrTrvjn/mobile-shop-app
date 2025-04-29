@@ -5,6 +5,7 @@ import { debounceTime, map, filter, distinctUntilChanged } from 'rxjs/operators'
 import { fetchProducts } from '../../services/productService'
 import { ProductCard } from '../../components/ProductCard/index.jsx'
 import { useTranslation } from '../../context/I18nContext'
+import { MagnifyingGlass } from 'phosphor-react'
 import './style.css'
 
 export function Home() {
@@ -127,6 +128,7 @@ export function Home() {
     <div className="product-list-page" onClick={() => setShowSuggestions(false)}>
       <div className="search-container">
         <div className="search-input-wrapper">
+          <MagnifyingGlass className="search-icon" size={18} />
           <input
             ref={searchInputRef}
             type="text"
