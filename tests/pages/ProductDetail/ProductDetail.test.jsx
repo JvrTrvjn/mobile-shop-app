@@ -1,24 +1,20 @@
-import { h } from 'preact';
-import { render, screen, fireEvent, waitFor } from '@testing-library/preact';
-import { expect, describe, it, vi, beforeEach } from 'vitest';
-import { ProductDetail } from '../../../src/pages/ProductDetail/index';
-import { fetchProductDetails } from '../../../src/services/productService';
+import { render, screen, fireEvent, waitFor } from '@testing-library/preact'
+import { expect, describe, it, vi, beforeEach } from 'vitest'
+import { ProductDetail } from '../../../src/pages/ProductDetail/index'
+import { fetchProductDetails } from '../../../src/services/productService'
 
-// Mock de los servicios
 vi.mock('../../../src/services/productService', () => ({
-  fetchProductDetails: vi.fn()
-}));
+  fetchProductDetails: vi.fn(),
+}))
 
-// Mock para useLocation
-const mockRoute = vi.fn();
+const mockRoute = vi.fn()
 vi.mock('preact-iso', () => ({
   useLocation: () => ({
     url: '/product/1',
-    route: mockRoute
-  })
-}));
+    route: mockRoute,
+  }),
+}))
 
-// Mock para los componentes secundarios
 vi.mock('../../../src/components/ColorSelector/index.jsx', () => ({
   ColorSelector: ({ colors, selectedColor, onColorSelect }) => (
     <div data-testid="color-selector">
@@ -33,8 +29,8 @@ vi.mock('../../../src/components/ColorSelector/index.jsx', () => ({
         </button>
       ))}
     </div>
-  )
-}));
+  ),
+}))
 
 vi.mock('../../../src/components/StorageSelector/index.jsx', () => ({
   StorageSelector: ({ options, selectedStorage, onStorageSelect }) => (
@@ -50,19 +46,18 @@ vi.mock('../../../src/components/StorageSelector/index.jsx', () => ({
         </button>
       ))}
     </div>
-  )
-}));
+  ),
+}))
 
 vi.mock('../../../src/components/AddToCartButton/index.jsx', () => ({
   AddToCartButton: ({ product, selectedColor, selectedStorage }) => (
     <div data-testid="add-to-cart-button">
       Añadir al carrito ({selectedColor}, {selectedStorage})
     </div>
-  )
-}));
+  ),
+}))
 
 describe('ProductDetail Page', () => {
-  // Datos de ejemplo para tests
   const mockProduct = {
     id: '1',
     brand: 'Apple',
@@ -81,195 +76,172 @@ describe('ProductDetail Page', () => {
       colors: [
         { code: 1000, name: 'Negro' },
         { code: 2000, name: 'Blanco' },
-        { code: 3000, name: 'Azul' }
+        { code: 3000, name: 'Azul' },
       ],
       storages: [
         { code: 64, name: '64 GB' },
         { code: 128, name: '128 GB' },
-        { code: 256, name: '256 GB' }
-      ]
-    }
-  };
+        { code: 256, name: '256 GB' },
+      ],
+    },
+  }
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    
-    // Mock fetch exitoso por defecto
-    vi.mocked(fetchProductDetails).mockResolvedValue(mockProduct);
-  });
+    vi.clearAllMocks()
+
+    vi.mocked(fetchProductDetails).mockResolvedValue(mockProduct)
+  })
 
   it('muestra un estado de carga inicialmente', () => {
-    render(<ProductDetail id="1" />);
-    expect(screen.getByText('Cargando detalles del producto...')).toBeDefined();
-  });
+    render(<ProductDetail id="1" />)
+    expect(screen.getByText('Cargando detalles del producto...')).toBeDefined()
+  })
 
   it('carga y muestra los detalles del producto', async () => {
-    render(<ProductDetail id="1" />);
-    
+    render(<ProductDetail id="1" />)
+
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull();
-    });
-    
-    // Verificar que se llamó al servicio
-    expect(fetchProductDetails).toHaveBeenCalledWith('1');
-    
-    // Verificar información básica del producto
-    expect(screen.getByText('Apple iPhone 13')).toBeDefined();
-    expect(screen.getByText('999€')).toBeDefined();
-    
-    // Verificar especificaciones
-    expect(screen.getByText('CPU:')).toBeDefined();
-    expect(screen.getByText('A15 Bionic')).toBeDefined();
-    expect(screen.getByText('RAM:')).toBeDefined();
-    expect(screen.getByText('4 GB')).toBeDefined();
-    expect(screen.getByText('Sistema Operativo:')).toBeDefined();
-    expect(screen.getByText('iOS 15')).toBeDefined();
-    
-    // Verificar imagen
-    const productImage = screen.getByAltText('Apple iPhone 13');
-    expect(productImage).toBeDefined();
-    expect(productImage.getAttribute('src')).toBe('iphone13.jpg');
-    
-    // Verificar selectores de opciones
-    expect(screen.getByTestId('color-selector')).toBeDefined();
-    expect(screen.getByTestId('storage-selector')).toBeDefined();
-    
-    // Verificar botón de añadir al carrito
-    expect(screen.getByTestId('add-to-cart-button')).toBeDefined();
-  });
+      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+    })
+
+    expect(fetchProductDetails).toHaveBeenCalledWith('1')
+
+    expect(screen.getByText('Apple iPhone 13')).toBeDefined()
+    expect(screen.getByText('999€')).toBeDefined()
+
+    expect(screen.getByText('CPU:')).toBeDefined()
+    expect(screen.getByText('A15 Bionic')).toBeDefined()
+    expect(screen.getByText('RAM:')).toBeDefined()
+    expect(screen.getByText('4 GB')).toBeDefined()
+    expect(screen.getByText('Sistema Operativo:')).toBeDefined()
+    expect(screen.getByText('iOS 15')).toBeDefined()
+
+    const productImage = screen.getByAltText('Apple iPhone 13')
+    expect(productImage).toBeDefined()
+    expect(productImage.getAttribute('src')).toBe('iphone13.jpg')
+
+    expect(screen.getByTestId('color-selector')).toBeDefined()
+    expect(screen.getByTestId('storage-selector')).toBeDefined()
+
+    expect(screen.getByTestId('add-to-cart-button')).toBeDefined()
+  })
 
   it('muestra un mensaje de error si no se pueden cargar los detalles', async () => {
-    // Mock fetch con error
-    vi.mocked(fetchProductDetails).mockRejectedValue(new Error('Error de API'));
-    
-    render(<ProductDetail id="1" />);
-    
+    vi.mocked(fetchProductDetails).mockRejectedValue(new Error('Error de API'))
+
+    render(<ProductDetail id="1" />)
+
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull();
-    });
-    
+      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+    })
+
     // Verificar mensaje de error
-    expect(screen.getByText(/Error al cargar los detalles del producto/)).toBeDefined();
-    
+    expect(screen.getByText(/Error al cargar los detalles del producto/)).toBeDefined()
+
     // Verificar botón para volver
-    const backButton = screen.getByText('Volver a la tienda');
-    expect(backButton).toBeDefined();
-  });
+    const backButton = screen.getByText('Volver a la tienda')
+    expect(backButton).toBeDefined()
+  })
 
   it('extrae el ID de la URL si no se proporciona como prop', async () => {
-    render(<ProductDetail />);
-    
+    render(<ProductDetail />)
+
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull();
-    });
-    
-    // Verificar que se llamó al servicio con el ID correcto
-    expect(fetchProductDetails).toHaveBeenCalledWith('1');
-  });
+      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+    })
+
+    expect(fetchProductDetails).toHaveBeenCalledWith('1')
+  })
 
   it('navega a la página principal al hacer clic en el botón "Volver a la tienda"', async () => {
-    render(<ProductDetail id="1" />);
-    
+    render(<ProductDetail id="1" />)
+
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull();
-    });
-    
-    // Hacer clic en el botón para volver
-    fireEvent.click(screen.getByText('← Volver a la tienda'));
-    
-    // Verificar que se llamó a la función de navegación
-    expect(mockRoute).toHaveBeenCalledWith('/');
-  });
+      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+    })
+
+    fireEvent.click(screen.getByText('← Volver a la tienda'))
+
+    expect(mockRoute).toHaveBeenCalledWith('/')
+  })
 
   it('muestra "Imagen no disponible" cuando no hay URL de imagen', async () => {
-    // Mock producto sin imagen
     const productWithoutImage = {
       ...mockProduct,
-      imgUrl: null
-    };
-    vi.mocked(fetchProductDetails).mockResolvedValue(productWithoutImage);
-    
-    render(<ProductDetail id="1" />);
-    
+      imgUrl: null,
+    }
+    vi.mocked(fetchProductDetails).mockResolvedValue(productWithoutImage)
+
+    render(<ProductDetail id="1" />)
+
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull();
-    });
-    
-    // Verificar placeholder de imagen
-    expect(screen.getByText('Imagen no disponible')).toBeDefined();
-  });
+      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+    })
+
+    expect(screen.getByText('Imagen no disponible')).toBeDefined()
+  })
 
   it('muestra "Precio no disponible" cuando no hay precio', async () => {
-    // Mock producto sin precio
     const productWithoutPrice = {
       ...mockProduct,
-      price: null
-    };
-    vi.mocked(fetchProductDetails).mockResolvedValue(productWithoutPrice);
-    
-    render(<ProductDetail id="1" />);
-    
+      price: null,
+    }
+    vi.mocked(fetchProductDetails).mockResolvedValue(productWithoutPrice)
+
+    render(<ProductDetail id="1" />)
+
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull();
-    });
-    
-    // Verificar mensaje de precio
-    expect(screen.getByText('Precio no disponible')).toBeDefined();
-  });
+      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+    })
+
+    expect(screen.getByText('Precio no disponible')).toBeDefined()
+  })
 
   it('permite seleccionar diferentes opciones de color', async () => {
-    render(<ProductDetail id="1" />);
-    
+    render(<ProductDetail id="1" />)
+
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull();
-    });
-    
-    // Verificar que el color inicial es "Negro" (código 1000)
-    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('1000');
-    
-    // Hacer clic en la opción de color "Blanco"
-    fireEvent.click(screen.getByTestId('color-option-2000'));
-    
-    // Verificar que se actualizó el color seleccionado
-    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('2000');
-  });
+      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+    })
+
+    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('1000')
+
+    fireEvent.click(screen.getByTestId('color-option-2000'))
+
+    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('2000')
+  })
 
   it('permite seleccionar diferentes opciones de almacenamiento', async () => {
-    render(<ProductDetail id="1" />);
-    
+    render(<ProductDetail id="1" />)
+
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull();
-    });
-    
-    // Verificar que el almacenamiento inicial es "64 GB" (código 64)
-    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('64');
-    
-    // Hacer clic en la opción de almacenamiento "128 GB"
-    fireEvent.click(screen.getByTestId('storage-option-128'));
-    
-    // Verificar que se actualizó el almacenamiento seleccionado
-    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('128');
-  });
+      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+    })
+
+    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('64')
+
+    fireEvent.click(screen.getByTestId('storage-option-128'))
+
+    expect(screen.getByTestId('add-to-cart-button').textContent).toContain('128')
+  })
 
   it('muestra mensaje cuando no hay opciones disponibles', async () => {
-    // Mock producto sin opciones
     const productWithoutOptions = {
       ...mockProduct,
       options: {
         colors: [],
-        storages: []
-      }
-    };
-    vi.mocked(fetchProductDetails).mockResolvedValue(productWithoutOptions);
-    
-    render(<ProductDetail id="1" />);
-    
+        storages: [],
+      },
+    }
+    vi.mocked(fetchProductDetails).mockResolvedValue(productWithoutOptions)
+
+    render(<ProductDetail id="1" />)
+
     await waitFor(() => {
-      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull();
-    });
-    
-    // Verificar mensajes cuando no hay opciones
-    expect(screen.getByText('No hay opciones de color disponibles')).toBeDefined();
-    expect(screen.getByText('No hay opciones de almacenamiento disponibles')).toBeDefined();
-  });
-});
+      expect(screen.queryByText('Cargando detalles del producto...')).toBeNull()
+    })
+
+    expect(screen.getByText('No hay opciones de color disponibles')).toBeDefined()
+    expect(screen.getByText('No hay opciones de almacenamiento disponibles')).toBeDefined()
+  })
+})
