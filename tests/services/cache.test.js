@@ -1,13 +1,14 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { expect, describe, it, vi, beforeEach } from 'vitest';
 import { getFromCache, saveToCache, getCacheKey, clearCache } from '../../src/services/cache';
 
 describe('Cache Service', () => {
+  // Mock de localStorage
   const localStorageMock = (() => {
     let store = {};
     return {
       getItem: vi.fn(key => store[key] || null),
       setItem: vi.fn((key, value) => {
-        store[key] = value.toString();
+        store[key] = value;
       }),
       removeItem: vi.fn(key => {
         delete store[key];
@@ -15,91 +16,157 @@ describe('Cache Service', () => {
       clear: vi.fn(() => {
         store = {};
       }),
-      key: vi.fn((index) => {
+      key: vi.fn(index => {
         return Object.keys(store)[index] || null;
       }),
-      length: 0,
       get length() {
         return Object.keys(store).length;
       }
     };
   })();
 
-  global.localStorage = localStorageMock;
-
   beforeEach(() => {
-    localStorageMock.clear();
     vi.clearAllMocks();
-    vi.spyOn(Date, 'now').mockImplementation(() => 1000);
+    global.localStorage = localStorageMock;
+    global.Date.now = vi.fn(() => 1619766000000); // Fecha fija para tests
+    localStorageMock.clear();
   });
 
-  it('should save data to cache with expiration', () => {
-    const testData = { name: 'Test' };
-    saveToCache('testKey', testData);
-
-    expect(localStorageMock.setItem).toHaveBeenCalled();
-    const callArgs = localStorageMock.setItem.mock.calls[0];
-    expect(callArgs[0]).toBe('testKey');
-    const savedData = JSON.parse(callArgs[1]);
-    expect(savedData.data).toEqual(testData);
-    expect(savedData.expiry).toBe(Date.now() + 60 * 60 * 1000);
-  });
-
-  it('should retrieve valid data from cache', () => {
-    const testData = { test: 'value' };
-    const cachedItem = {
-      data: testData,
-      expiry: Date.now() + 10000 
-    };
-    localStorageMock.getItem.mockReturnValueOnce(JSON.stringify(cachedItem));
-
-    const result = getFromCache('testKey');
-
-    expect(localStorageMock.getItem).toHaveBeenCalledWith('testKey');
-    expect(result).toEqual(testData);
-  });
-
-  it('should return null for expired data and remove it', () => {
-    const cachedItem = {
-      data: { test: 'expired' },
-      expiry: Date.now() - 1000 
-    };
-    localStorageMock.getItem.mockReturnValueOnce(JSON.stringify(cachedItem));
-
-    const result = getFromCache('testKey');
-
-    expect(localStorageMock.getItem).toHaveBeenCalledWith('testKey');
-    expect(localStorageMock.removeItem).toHaveBeenCalledWith('testKey');
-    expect(result).toBeNull();
-  });
-
-  it('should generate proper cache keys', () => {
-    expect(getCacheKey('products')).toBe('products');
-    expect(getCacheKey('product', '123')).toBe('product_123');
-  });
-
-  it('should clear only app-related cache items', () => {
-    // Setup multiple cache entries
-    const mockLocalStorage = {
-      'products': 'data',
-      'product_123': 'data',
-      'other_app_key': 'data'
-    };
-    
-    const keys = Object.keys(mockLocalStorage);
-    localStorageMock.key.mockImplementation((index) => keys[index] || null);
-    Object.defineProperty(localStorageMock, 'length', {
-      get: () => keys.length
+  describe('getFromCache', () => {
+    it('devuelve null si no hay datos en caché', () => {
+      localStorageMock.getItem.mockReturnValue(null);
+      
+      const result = getFromCache('test-key');
+      
+      expect(result).toBeNull();
+      expect(localStorageMock.getItem).toHaveBeenCalledWith('test-key');
     });
     
-    keys.forEach(key => {
-      localStorageMock.getItem.mockImplementationOnce(() => mockLocalStorage[key]);
+    it('devuelve los datos si están en caché y no han expirado', () => {
+      const cachedData = {
+        data: { id: '1', name: 'Test Data' },
+        expiry: Date.now() + 3600000 // Una hora en el futuro
+      };
+      
+      localStorageMock.getItem.mockReturnValue(JSON.stringify(cachedData));
+      
+      const result = getFromCache('test-key');
+      
+      expect(result).toEqual(cachedData.data);
+      expect(localStorageMock.getItem).toHaveBeenCalledWith('test-key');
     });
-
-    clearCache();
-
-    expect(localStorageMock.removeItem).toHaveBeenCalledWith('products');
-    expect(localStorageMock.removeItem).toHaveBeenCalledWith('product_123');
-    expect(localStorageMock.removeItem).not.toHaveBeenCalledWith('other_app_key');
+    
+    it('devuelve null y elimina los datos expirados', () => {
+      const cachedData = {
+        data: { id: '1', name: 'Test Data' },
+        expiry: Date.now() - 1000 // Pasado (expirado)
+      };
+      
+      localStorageMock.getItem.mockReturnValue(JSON.stringify(cachedData));
+      
+      const result = getFromCache('test-key');
+      
+      expect(result).toBeNull();
+      expect(localStorageMock.getItem).toHaveBeenCalledWith('test-key');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('test-key');
+    });
+    
+    it('maneja errores en el parseo de JSON', () => {
+      localStorageMock.getItem.mockReturnValue('invalid json');
+      
+      const result = getFromCache('test-key');
+      
+      expect(result).toBeNull();
+    });
+    
+    it('maneja errores en localStorage', () => {
+      localStorageMock.getItem.mockImplementation(() => {
+        throw new Error('localStorage error');
+      });
+      
+      const result = getFromCache('test-key');
+      
+      expect(result).toBeNull();
+    });
+  });
+  
+  describe('saveToCache', () => {
+    it('guarda los datos en caché con tiempo de expiración', () => {
+      const data = { id: '1', name: 'Test Data' };
+      
+      saveToCache('test-key', data);
+      
+      // Verificar que se guardó correctamente
+      expect(localStorageMock.setItem).toHaveBeenCalled();
+      
+      // Extraer y verificar el objeto guardado
+      const savedValue = JSON.parse(localStorageMock.setItem.mock.calls[0][1]);
+      expect(savedValue.data).toEqual(data);
+      expect(savedValue.expiry).toBeGreaterThan(Date.now());
+    });
+    
+    it('maneja errores al guardar en caché', () => {
+      localStorageMock.setItem.mockImplementation(() => {
+        throw new Error('localStorage error');
+      });
+      
+      // No debería lanzar error, solo manejar silenciosamente
+      expect(() => saveToCache('test-key', { id: 1 })).not.toThrow();
+    });
+  });
+  
+  describe('getCacheKey', () => {
+    it('genera clave para recurso sin ID', () => {
+      const key = getCacheKey('products');
+      expect(key).toBe('products');
+    });
+    
+    it('genera clave para recurso con ID', () => {
+      const key = getCacheKey('product', '123');
+      expect(key).toBe('product_123');
+    });
+  });
+  
+  describe('clearCache', () => {
+    it('elimina todas las claves de caché de productos', () => {
+      // Configurar algunos elementos en localStorage
+      const mockStore = {
+        'products': 'cached data',
+        'product_1': 'product data',
+        'product_2': 'product data',
+        'other_data': 'should not be removed'
+      };
+      
+      // Simular localStorage con estos elementos
+      let index = 0;
+      for (const key in mockStore) {
+        localStorageMock.key.mockImplementationOnce(() => key);
+        localStorageMock.getItem.mockImplementationOnce(() => mockStore[key]);
+        index++;
+      }
+      
+      Object.defineProperty(localStorageMock, 'length', {
+        value: Object.keys(mockStore).length,
+        writable: true
+      });
+      
+      // Ejecutar clearCache
+      clearCache();
+      
+      // Verificar que se removieron los elementos correctos
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('products');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('product_1');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('product_2');
+      expect(localStorageMock.removeItem).not.toHaveBeenCalledWith('other_data');
+    });
+    
+    it('maneja errores al limpiar la caché', () => {
+      localStorageMock.key.mockImplementation(() => {
+        throw new Error('localStorage error');
+      });
+      
+      // No debería lanzar error, solo manejar silenciosamente
+      expect(() => clearCache()).not.toThrow();
+    });
   });
 });

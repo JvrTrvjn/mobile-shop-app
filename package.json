@@ -7,6 +7,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:verbose": "vitest run --reporter verbose",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
