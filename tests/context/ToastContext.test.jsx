@@ -1,175 +1,194 @@
-import { render, act } from '@testing-library/preact';
+import { h } from 'preact';
+import { render, act, screen, fireEvent } from '@testing-library/preact';
 import { expect, describe, it, vi, beforeEach } from 'vitest';
 import { ToastProvider, useToast } from '../../src/context/ToastContext';
-import { toast as toastify } from 'react-toastify';
 
-// Mock de react-toastify
-vi.mock('react-toastify', () => {
-  return {
-    toast: {
-      success: vi.fn(),
-      error: vi.fn(),
-      info: vi.fn(),
-      warning: vi.fn(),
-    },
-    ToastContainer: vi.fn(() => null),
-  };
-});
-
-// Componente para testear el hook useToast
-function TestComponent({ testFn }) {
-  const toast = useToast();
-  testFn(toast);
-  return null;
-}
+// Componente de prueba para acceder al contexto
+const TestComponent = ({ onRender }) => {
+  const { showToast, hideToast, toasts } = useToast();
+  
+  onRender({ showToast, hideToast, toasts });
+  
+  return (
+    <div>
+      <button data-testid="show-success" onClick={() => showToast('success', 'Mensaje de éxito')}>
+        Mostrar éxito
+      </button>
+      <button data-testid="show-error" onClick={() => showToast('error', 'Mensaje de error')}>
+        Mostrar error
+      </button>
+      <button data-testid="show-warning" onClick={() => showToast('warning', 'Mensaje de advertencia')}>
+        Mostrar advertencia
+      </button>
+      <button data-testid="hide-toast" onClick={() => hideToast(0)}>
+        Ocultar toast
+      </button>
+    </div>
+  );
+};
 
 describe('ToastContext', () => {
+  let toastContext;
+  const onRender = (ctx) => {
+    toastContext = ctx;
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useFakeTimers();
   });
 
-  it('proporciona funciones para mostrar diferentes tipos de toast', () => {
-    let capturedToast;
-
-    const testFn = vi.fn((toast) => {
-      capturedToast = toast;
-    });
-
-    render(
-      <ToastProvider>
-        <TestComponent testFn={testFn} />
-      </ToastProvider>
-    );
-
-    // Verificar que todas las funciones necesarias están disponibles
-    expect(capturedToast).toBeDefined();
-    expect(typeof capturedToast.success).toBe('function');
-    expect(typeof capturedToast.error).toBe('function');
-    expect(typeof capturedToast.info).toBe('function');
-    expect(typeof capturedToast.warning).toBe('function');
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
-  it('muestra toast de éxito correctamente', () => {
-    let capturedToast;
-
-    const testFn = vi.fn((toast) => {
-      capturedToast = toast;
-    });
-
+  it('inicializa sin toasts', () => {
     render(
       <ToastProvider>
-        <TestComponent testFn={testFn} />
+        <TestComponent onRender={onRender} />
       </ToastProvider>
     );
+    
+    expect(toastContext.toasts).toEqual([]);
+  });
 
-    // Llamar a success
+  it('muestra un toast de éxito', () => {
+    render(
+      <ToastProvider>
+        <TestComponent onRender={onRender} />
+      </ToastProvider>
+    );
+    
+    fireEvent.click(screen.getByTestId('show-success'));
+    
+    expect(toastContext.toasts).toHaveLength(1);
+    expect(toastContext.toasts[0].type).toBe('success');
+    expect(toastContext.toasts[0].message).toBe('Mensaje de éxito');
+    expect(toastContext.toasts[0].id).toBeDefined();
+  });
+
+  it('muestra un toast de error', () => {
+    render(
+      <ToastProvider>
+        <TestComponent onRender={onRender} />
+      </ToastProvider>
+    );
+    
+    fireEvent.click(screen.getByTestId('show-error'));
+    
+    expect(toastContext.toasts).toHaveLength(1);
+    expect(toastContext.toasts[0].type).toBe('error');
+    expect(toastContext.toasts[0].message).toBe('Mensaje de error');
+  });
+
+  it('muestra un toast de advertencia', () => {
+    render(
+      <ToastProvider>
+        <TestComponent onRender={onRender} />
+      </ToastProvider>
+    );
+    
+    fireEvent.click(screen.getByTestId('show-warning'));
+    
+    expect(toastContext.toasts).toHaveLength(1);
+    expect(toastContext.toasts[0].type).toBe('warning');
+    expect(toastContext.toasts[0].message).toBe('Mensaje de advertencia');
+  });
+
+  it('oculta un toast específico', () => {
+    render(
+      <ToastProvider>
+        <TestComponent onRender={onRender} />
+      </ToastProvider>
+    );
+    
+    // Mostrar dos toasts
+    fireEvent.click(screen.getByTestId('show-success'));
+    fireEvent.click(screen.getByTestId('show-error'));
+    
+    expect(toastContext.toasts).toHaveLength(2);
+    
+    // Ocultar el primer toast
+    fireEvent.click(screen.getByTestId('hide-toast'));
+    
+    expect(toastContext.toasts).toHaveLength(1);
+    expect(toastContext.toasts[0].type).toBe('error');
+  });
+
+  it('oculta automáticamente los toasts después del tiempo especificado', () => {
+    render(
+      <ToastProvider autoHideTime={3000}>
+        <TestComponent onRender={onRender} />
+      </ToastProvider>
+    );
+    
+    fireEvent.click(screen.getByTestId('show-success'));
+    expect(toastContext.toasts).toHaveLength(1);
+    
+    // Avanzar el tiempo 3 segundos
     act(() => {
-      capturedToast.success('Mensaje de éxito');
+      vi.advanceTimersByTime(3000);
     });
-
-    // Verificar que se llamó a toastify.success con los parámetros correctos
-    expect(toastify.success).toHaveBeenCalledTimes(1);
-    expect(toastify.success).toHaveBeenCalledWith('Mensaje de éxito', expect.objectContaining({
-      toastId: 'success-Mensaje de éxito'
-    }));
+    
+    expect(toastContext.toasts).toHaveLength(0);
   });
 
-  it('muestra toast de error correctamente', () => {
-    let capturedToast;
-
-    const testFn = vi.fn((toast) => {
-      capturedToast = toast;
-    });
-
+  it('mantiene varios toasts independientes', () => {
     render(
       <ToastProvider>
-        <TestComponent testFn={testFn} />
+        <TestComponent onRender={onRender} />
       </ToastProvider>
     );
-
-    // Llamar a error
-    act(() => {
-      capturedToast.error('Mensaje de error');
-    });
-
-    // Verificar que se llamó a toastify.error con los parámetros correctos
-    expect(toastify.error).toHaveBeenCalledTimes(1);
-    expect(toastify.error).toHaveBeenCalledWith('Mensaje de error', expect.objectContaining({
-      toastId: 'error-Mensaje de error'
-    }));
+    
+    // Mostrar tres toasts diferentes
+    fireEvent.click(screen.getByTestId('show-success'));
+    fireEvent.click(screen.getByTestId('show-error'));
+    fireEvent.click(screen.getByTestId('show-warning'));
+    
+    expect(toastContext.toasts).toHaveLength(3);
+    expect(toastContext.toasts[0].type).toBe('success');
+    expect(toastContext.toasts[1].type).toBe('error');
+    expect(toastContext.toasts[2].type).toBe('warning');
   });
 
-  it('muestra toast de advertencia correctamente', () => {
-    let capturedToast;
-
-    const testFn = vi.fn((toast) => {
-      capturedToast = toast;
-    });
-
+  it('permite establecer un tiempo de auto-ocultación específico para cada toast', () => {
     render(
-      <ToastProvider>
-        <TestComponent testFn={testFn} />
+      <ToastProvider autoHideTime={3000}>
+        <TestComponent onRender={onRender} />
       </ToastProvider>
     );
-
-    // Llamar a warning
+    
+    // Llamar directamente a showToast con autoHideTime específico
     act(() => {
-      capturedToast.warning('Mensaje de advertencia');
+      toastContext.showToast('success', 'Toast rápido', 1000);
     });
 
-    // Verificar que se llamó a toastify.warning con los parámetros correctos
-    expect(toastify.warning).toHaveBeenCalledTimes(1);
-    expect(toastify.warning).toHaveBeenCalledWith('Mensaje de advertencia', expect.objectContaining({
-      toastId: 'warning-Mensaje de advertencia'
-    }));
-  });
-
-  it('muestra toast de información correctamente', () => {
-    let capturedToast;
-
-    const testFn = vi.fn((toast) => {
-      capturedToast = toast;
-    });
-
-    render(
-      <ToastProvider>
-        <TestComponent testFn={testFn} />
-      </ToastProvider>
-    );
-
-    // Llamar a info
+    expect(toastContext.toasts).toHaveLength(1);
+    
+    // Avanzar 1 segundo, el toast rápido debe desaparecer
     act(() => {
-      capturedToast.info('Mensaje informativo');
+      vi.advanceTimersByTime(1000);
     });
-
-    // Verificar que se llamó a toastify.info con los parámetros correctos
-    expect(toastify.info).toHaveBeenCalledTimes(1);
-    expect(toastify.info).toHaveBeenCalledWith('Mensaje informativo', expect.objectContaining({
-      toastId: 'info-Mensaje informativo'
-    }));
-  });
-
-  it('usa el id personalizado cuando se proporciona', () => {
-    let capturedToast;
-
-    const testFn = vi.fn((toast) => {
-      capturedToast = toast;
-    });
-
-    render(
-      <ToastProvider>
-        <TestComponent testFn={testFn} />
-      </ToastProvider>
-    );
-
-    // Llamar a success con un toastId personalizado
+    
+    expect(toastContext.toasts).toHaveLength(0);
+    
+    // Añadir un toast normal
     act(() => {
-      capturedToast.success('Mensaje con ID personalizado', { toastId: 'custom-id' });
+      toastContext.showToast('error', 'Toast normal');
     });
-
-    // Verificar que se usó el id personalizado
-    expect(toastify.success).toHaveBeenCalledWith('Mensaje con ID personalizado', expect.objectContaining({
-      toastId: 'custom-id'
-    }));
+    
+    // Avanzar 1 segundo, el toast normal debe seguir visible
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+    
+    expect(toastContext.toasts).toHaveLength(1);
+    
+    // Avanzar 2 segundos más (total 3 segundos), el toast normal debe desaparecer
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    
+    expect(toastContext.toasts).toHaveLength(0);
   });
 });

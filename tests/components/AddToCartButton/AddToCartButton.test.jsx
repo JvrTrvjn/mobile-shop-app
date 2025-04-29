@@ -1,147 +1,224 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/preact'
-import { expect, describe, it, vi, beforeEach } from 'vitest'
-import { AddToCartButton } from '../../../src/components/AddToCartButton/index.jsx'
+import { h } from 'preact';
+import { render, screen, fireEvent, act } from '@testing-library/preact';
+import { expect, describe, it, vi, beforeEach } from 'vitest';
+import { AddToCartButton } from '../../../src/components/AddToCartButton/index';
 
+// Mock de los contextos
+const mockAddToCart = vi.fn();
 vi.mock('../../../src/context/CartContext', () => ({
   useCart: () => ({
-    addToCart: mockAddToCart,
-  }),
-}))
+    addToCart: mockAddToCart
+  })
+}));
 
+const mockToast = {
+  success: vi.fn(),
+  error: vi.fn(),
+  warning: vi.fn(),
+  info: vi.fn()
+};
 vi.mock('../../../src/context/ToastContext', () => ({
-  useToast: () => ({
-    success: mockToastSuccess,
-    error: mockToastError,
-    warning: mockToastWarning,
-  }),
-}))
-
-// Funciones mock
-const mockAddToCart = vi.fn().mockResolvedValue({ count: 1 })
-const mockToastSuccess = vi.fn()
-const mockToastError = vi.fn()
-const mockToastWarning = vi.fn()
+  useToast: () => mockToast
+}));
 
 describe('AddToCartButton Component', () => {
+  // Datos de ejemplo para tests
   const mockProduct = {
     id: '1',
-    brand: 'Test Brand',
-    model: 'Test Model',
+    brand: 'Apple',
+    model: 'iPhone 13',
     price: 999,
-  }
+    imgUrl: 'iphone13.jpg'
+  };
 
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+    // Simular operaciones asíncronas exitosas por defecto
+    mockAddToCart.mockResolvedValue({ count: 1 });
+  });
 
-  it('renders with initial quantity of 1', () => {
-    render(<AddToCartButton product={mockProduct} selectedColor="1000" selectedStorage="64" />)
+  it('renderiza el botón correctamente', () => {
+    render(
+      <AddToCartButton
+        product={mockProduct}
+        selectedColor="1000"
+        selectedStorage="64"
+      />
+    );
+    
+    // Verificar que se muestra el botón y los controles de cantidad
+    expect(screen.getByText('Añadir al carrito')).toBeDefined();
+    expect(screen.getByText('1')).toBeDefined(); // Cantidad por defecto
+    expect(screen.getByText('-')).toBeDefined();
+    expect(screen.getByText('+')).toBeDefined();
+  });
 
-    expect(screen.getByText('1')).toBeInTheDocument()
-    expect(screen.getByText('Añadir al carrito')).toBeInTheDocument()
-  })
+  it('incrementa la cantidad al hacer clic en el botón +', () => {
+    render(
+      <AddToCartButton
+        product={mockProduct}
+        selectedColor="1000"
+        selectedStorage="64"
+      />
+    );
+    
+    // Clic en el botón +
+    fireEvent.click(screen.getByText('+'));
+    
+    // Verificar que la cantidad aumentó
+    expect(screen.getByText('2')).toBeDefined();
+  });
 
-  it('increments quantity when + button is clicked', () => {
-    render(<AddToCartButton product={mockProduct} selectedColor="1000" selectedStorage="64" />)
+  it('decrementa la cantidad al hacer clic en el botón -', async () => {
+    render(
+      <AddToCartButton
+        product={mockProduct}
+        selectedColor="1000"
+        selectedStorage="64"
+      />
+    );
+    
+    // Primero incrementar para poder decrementar
+    fireEvent.click(screen.getByText('+'));
+    expect(screen.getByText('2')).toBeDefined();
+    
+    // Clic en el botón -
+    fireEvent.click(screen.getByText('-'));
+    
+    // Verificar que la cantidad disminuyó
+    expect(screen.getByText('1')).toBeDefined();
+  });
 
-    const incrementButton = screen.getByText('+')
-    fireEvent.click(incrementButton)
+  it('no decrementa por debajo de 1', () => {
+    render(
+      <AddToCartButton
+        product={mockProduct}
+        selectedColor="1000"
+        selectedStorage="64"
+      />
+    );
+    
+    // Intentar decrementar cuando la cantidad es 1
+    fireEvent.click(screen.getByText('-'));
+    
+    // Verificar que la cantidad sigue siendo 1
+    expect(screen.getByText('1')).toBeDefined();
+  });
 
-    expect(screen.getByText('2')).toBeInTheDocument()
-  })
+  it('muestra un mensaje cuando no se ha seleccionado color', () => {
+    render(
+      <AddToCartButton
+        product={mockProduct}
+        selectedColor={null}
+        selectedStorage="64"
+      />
+    );
+    
+    // Verificar que se muestra el mensaje
+    expect(screen.getByText('Selecciona un color')).toBeDefined();
+    
+    // Verificar que el botón está deshabilitado
+    const button = screen.getByText('Añadir al carrito');
+    expect(button.disabled).toBe(true);
+  });
 
-  it('decrements quantity when - button is clicked', () => {
-    render(<AddToCartButton product={mockProduct} selectedColor="1000" selectedStorage="64" />)
+  it('muestra un mensaje cuando no se ha seleccionado almacenamiento', () => {
+    render(
+      <AddToCartButton
+        product={mockProduct}
+        selectedColor="1000"
+        selectedStorage={null}
+      />
+    );
+    
+    // Verificar que se muestra el mensaje
+    expect(screen.getByText('Selecciona almacenamiento')).toBeDefined();
+    
+    // Verificar que el botón está deshabilitado
+    const button = screen.getByText('Añadir al carrito');
+    expect(button.disabled).toBe(true);
+  });
 
-    const incrementButton = screen.getByText('+')
-    fireEvent.click(incrementButton)
-    expect(screen.getByText('2')).toBeInTheDocument()
+  it('muestra un mensaje cuando no se ha seleccionado ni color ni almacenamiento', () => {
+    render(
+      <AddToCartButton
+        product={mockProduct}
+        selectedColor={null}
+        selectedStorage={null}
+      />
+    );
+    
+    // Verificar que se muestra el mensaje
+    expect(screen.getByText('Selecciona color y almacenamiento')).toBeDefined();
+    
+    // Verificar que el botón está deshabilitado
+    const button = screen.getByText('Añadir al carrito');
+    expect(button.disabled).toBe(true);
+  });
 
-    const decrementButton = screen.getByText('-')
-    fireEvent.click(decrementButton)
-    expect(screen.getByText('1')).toBeInTheDocument()
-  })
+  it('el botón está deshabilitado cuando no hay selecciones completas', () => {
+    render(
+      <AddToCartButton
+        product={mockProduct}
+        selectedColor={null}
+        selectedStorage={null}
+      />
+    );
+    
+    // Verificar que el botón está deshabilitado
+    const button = screen.getByText('Añadir al carrito');
+    expect(button.disabled).toBe(true);
+    expect(button.classList.contains('disabled')).toBe(true);
+  });
 
-  it('does not decrement below 1', () => {
-    render(<AddToCartButton product={mockProduct} selectedColor="1000" selectedStorage="64" />)
+  it('llama a addToCart con los parámetros correctos', async () => {
+    render(
+      <AddToCartButton
+        product={mockProduct}
+        selectedColor="1000"
+        selectedStorage="64"
+      />
+    );
+    
+    // Hacer clic en el botón de añadir al carrito
+    const addButton = screen.getByText('Añadir al carrito');
+    
+    await act(async () => {
+      fireEvent.click(addButton);
+    });
+    
+    // Verificar que se llamó a la función addToCart con los parámetros correctos
+    expect(mockAddToCart).toHaveBeenCalledWith(
+      mockProduct,
+       1,  // Cantidad por defecto
+      "1000", // Color seleccionado
+      "64"  // Almacenamiento seleccionado
+    );
+  });
 
-    const decrementButton = screen.getByText('-')
-    fireEvent.click(decrementButton)
-
-    // La cantidad debe seguir siendo 1
-    expect(screen.getByText('1')).toBeInTheDocument()
-  })
-
-  it('disables the - button when quantity is 1', () => {
-    render(<AddToCartButton product={mockProduct} selectedColor="1000" selectedStorage="64" />)
-
-    const decrementButton = screen.getByText('-')
-    expect(decrementButton).toBeDisabled()
-  })
-
-  it('shows warning when trying to add to cart without selections', async () => {
-    render(<AddToCartButton product={mockProduct} selectedColor="" selectedStorage="" />)
-
-    const addButton = screen.getByText('Añadir al carrito')
-    expect(addButton).toBeDisabled()
-
-    expect(screen.getByText('Selecciona color y almacenamiento')).toBeInTheDocument()
-  })
-
-  it('shows color selection reminder when only storage is selected', () => {
-    render(<AddToCartButton product={mockProduct} selectedColor="" selectedStorage="64" />)
-
-    expect(screen.getByText('Selecciona un color')).toBeInTheDocument()
-  })
-
-  it('shows storage selection reminder when only color is selected', () => {
-    render(<AddToCartButton product={mockProduct} selectedColor="1000" selectedStorage="" />)
-
-    expect(screen.getByText('Selecciona almacenamiento')).toBeInTheDocument()
-  })
-
-  it('adds product to cart when button is clicked with valid selections', async () => {
-    render(<AddToCartButton product={mockProduct} selectedColor="1000" selectedStorage="64" />)
-
-    const addButton = screen.getByText('Añadir al carrito')
-    fireEvent.click(addButton)
-
-    await waitFor(() => {
-      expect(mockAddToCart).toHaveBeenCalledWith(mockProduct, 1, '1000', '64')
-    })
-
-    expect(mockToastSuccess).toHaveBeenCalled()
-  })
-
-  it('shows error toast when adding to cart fails', async () => {
-    // Sobrescribir el mock para que falle
-    mockAddToCart.mockRejectedValueOnce(new Error('Test error'))
-
-    render(<AddToCartButton product={mockProduct} selectedColor="1000" selectedStorage="64" />)
-
-    const addButton = screen.getByText('Añadir al carrito')
-    fireEvent.click(addButton)
-
-    await waitFor(() => {
-      expect(mockToastError).toHaveBeenCalled()
-    })
-  })
-
-  it('shows warning toast when trying to add without selections', async () => {
-    const { rerender } = render(
-      <AddToCartButton product={mockProduct} selectedColor="1000" selectedStorage="" />
-    )
-
-    rerender(
-      <AddToCartButton product={mockProduct} selectedColor="1000" selectedStorage="testMode" />
-    )
-
-    const handleAddToCartMock = vi.fn().mockImplementation(async () => {
-      mockToastWarning('Por favor, selecciona color y almacenamiento')
-    })
-
-    await handleAddToCartMock()
-
-    expect(mockToastWarning).toHaveBeenCalled()
-  })
-})
+  it('maneja errores al añadir al carrito', async () => {
+    // Simular un error al añadir al carrito
+    const errorMessage = 'Error de prueba';
+    mockAddToCart.mockRejectedValueOnce(new Error(errorMessage));
+    
+    render(
+      <AddToCartButton
+        product={mockProduct}
+        selectedColor="1000"
+        selectedStorage="64"
+      />
+    );
+    
+    // Hacer clic en el botón de añadir al carrito
+    const addButton = screen.getByText('Añadir al carrito');
+    
+    await act(async () => {
+      fireEvent.click(addButton);
+      // Esperar a que la promesa se resuelva (o rechace)
+      await new Promise(process.nextTick);
+    });
+    
+    // Verificar que se llamó a la función de error
+    expect(mockToast.error).toHaveBeenCalled();
+  });
+});

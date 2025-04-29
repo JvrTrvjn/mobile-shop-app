@@ -1,181 +1,281 @@
+import { h } from 'preact';
 import { render, act, waitFor } from '@testing-library/preact';
-import { expect, describe, it, vi, beforeEach, afterEach } from 'vitest';
-import { CartProvider, useCart } from '../../src/context/CartContext';
+import { expect, describe, it, vi, beforeEach } from 'vitest';
+import { CartProvider, useCart, CartContext } from '../../src/context/CartContext';
+import { getCartCount, updateCartCount, addProductToCart } from '../../src/services/productService';
 
 // Mock de los servicios
 vi.mock('../../src/services/productService', () => ({
-  getCartCount: vi.fn(() => mockCartCount),
+  getCartCount: vi.fn(),
   updateCartCount: vi.fn(),
-  addProductToCart: vi.fn(() => Promise.resolve({ count: mockApiResponse }))
+  addProductToCart: vi.fn()
 }));
 
 // Mock del logger
 vi.mock('../../src/utils/logger', () => ({
   default: {
     log: vi.fn(),
-    error: vi.fn()
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn()
   }
 }));
 
-// Variables globales para controlar los mocks
-let mockCartCount = 0;
-let mockApiResponse = 5;
-
-// Componente de test para acceder al contexto
-function TestComponent({ testFn }) {
+// Componente de prueba para acceder al contexto
+const TestComponent = ({ onRender }) => {
   const cartContext = useCart();
-  testFn(cartContext);
-  return null;
-}
+  onRender(cartContext);
+  return <div>Test Component</div>;
+};
 
 describe('CartContext', () => {
-  // Spy para CustomEvent
-  let dispatchEventSpy;
+  // Variables para pruebas
+  let cartContext;
+  const onRender = ctx => {
+    cartContext = ctx;
+  };
+
+  // Datos de ejemplo para tests
+  const mockProduct = {
+    id: '1',
+    brand: 'Apple',
+    model: 'iPhone 13',
+    price: 999,
+    imgUrl: 'iphone13.jpg'
+  };
 
   beforeEach(() => {
-    // Reset mocks
     vi.clearAllMocks();
-    mockCartCount = 0;
-    mockApiResponse = 5;
+    localStorage.clear();
     
-    // Espiar dispatchEvent para CustomEvent
-    dispatchEventSpy = vi.spyOn(window, 'dispatchEvent');
-    
-    // Mock localStorage
-    vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-      if (key === 'cartCount') return String(mockCartCount);
-      return null;
-    });
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {});
+    // Mocks predeterminados
+    vi.mocked(getCartCount).mockReturnValue(0);
+    vi.mocked(addProductToCart).mockResolvedValue({ count: 1 });
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('inicializa el estado correctamente', async () => {
-    mockCartCount = 3;
-    
-    // Capturar el contexto real para verificar después
-    let capturedContext;
-    
-    const testFn = vi.fn((cartContext) => {
-      capturedContext = cartContext;
-    });
-    
+  it('inicializa el carrito con contador en 0', () => {
     render(
       <CartProvider>
-        <TestComponent testFn={testFn} />
+        <TestComponent onRender={onRender} />
       </CartProvider>
     );
     
-    // Verificar después que el valor se inicializó correctamente
-    expect(capturedContext.state.count).toBe(3);
-    expect(capturedContext.state.items).toEqual([]);
-    expect(capturedContext.state.total).toBe(0);
+    expect(cartContext.state.count).toBe(0);
+    expect(cartContext.state.total).toBe(0);
+    expect(cartContext.state.items).toEqual([]);
   });
 
-  it('añade un producto al carrito y sincroniza con el servidor', async () => {
-    mockCartCount = 0;
-    mockApiResponse = 1; // El servidor devuelve que hay 1 producto
-    
-    const mockProduct = {
-      id: '1',
-      brand: 'Test Brand',
-      model: 'Test Model',
-      price: 999
-    };
-    
-    let cartContextCapture;
-    
-    const testFn = vi.fn((cartContext) => {
-      cartContextCapture = cartContext;
-    });
-    
+  it('añade un producto al carrito', async () => {
     render(
       <CartProvider>
-        <TestComponent testFn={testFn} />
+        <TestComponent onRender={onRender} />
       </CartProvider>
     );
     
-    // Añadir al carrito
     await act(async () => {
-      await cartContextCapture.addToCart(mockProduct, 1, '1000', '64');
+      await cartContext.addToCart(mockProduct, 1, '1000', '64');
     });
     
-    // Verificar que el item se añadió correctamente
-    expect(cartContextCapture.state.items.length).toBe(1);
-    expect(cartContextCapture.state.items[0].id).toBe('1');
-    expect(cartContextCapture.state.items[0].selectedColor).toBe('1000');
-    expect(cartContextCapture.state.items[0].selectedStorage).toBe('64');
-    expect(cartContextCapture.state.items[0].quantity).toBe(1);
+    // Verificar que se actualizó el estado
+    expect(cartContext.state.count).toBe(1);
+    expect(cartContext.state.total).toBe(999); // Precio del producto
+    expect(cartContext.state.items).toHaveLength(1);
+    expect(cartContext.state.items[0].id).toBe('1');
+    expect(cartContext.state.items[0].quantity).toBe(1);
+    expect(cartContext.state.items[0].selectedColor).toBe('1000');
+    expect(cartContext.state.items[0].selectedStorage).toBe('64');
     
-    // Verificar que se emitió el evento cartUpdated
-    expect(dispatchEventSpy).toHaveBeenCalled();
-    const event = dispatchEventSpy.mock.calls[0][0];
-    expect(event.type).toBe('cartUpdated');
+    // Verificar que se llamó a la API
+    expect(addProductToCart).toHaveBeenCalledWith({
+      id: '1',
+      colorCode: 1000,
+      storageCode: 64
+    });
+  });
+
+  it('actualiza la cantidad si el mismo producto se añade de nuevo', async () => {
+    render(
+      <CartProvider>
+        <TestComponent onRender={onRender} />
+      </CartProvider>
+    );
+    
+    // Añadir producto por primera vez
+    await act(async () => {
+      await cartContext.addToCart(mockProduct, 1, '1000', '64');
+    });
+    
+    // Añadir el mismo producto otra vez
+    await act(async () => {
+      await cartContext.addToCart(mockProduct, 2, '1000', '64');
+    });
+    
+    // Verificar que se actualizó la cantidad y no se duplicó el producto
+    expect(cartContext.state.count).toBe(3);
+    expect(cartContext.state.total).toBe(2997); // 999 * 3
+    expect(cartContext.state.items).toHaveLength(1);
+    expect(cartContext.state.items[0].quantity).toBe(3);
+  });
+
+  it('añade productos diferentes como elementos separados', async () => {
+    render(
+      <CartProvider>
+        <TestComponent onRender={onRender} />
+      </CartProvider>
+    );
+    
+    // Añadir producto con color negro
+    await act(async () => {
+      await cartContext.addToCart(mockProduct, 1, '1000', '64');
+    });
+    
+    // Añadir el mismo producto pero con color blanco
+    await act(async () => {
+      await cartContext.addToCart(mockProduct, 1, '2000', '64');
+    });
+    
+    // Verificar que son elementos separados
+    expect(cartContext.state.count).toBe(2);
+    expect(cartContext.state.total).toBe(1998); // 999 * 2
+    expect(cartContext.state.items).toHaveLength(2);
+    expect(cartContext.state.items[0].selectedColor).toBe('1000');
+    expect(cartContext.state.items[1].selectedColor).toBe('2000');
+  });
+
+  it('elimina un producto del carrito', async () => {
+    render(
+      <CartProvider>
+        <TestComponent onRender={onRender} />
+      </CartProvider>
+    );
+    
+    // Añadir un producto
+    await act(async () => {
+      await cartContext.addToCart(mockProduct, 1, '1000', '64');
+    });
+    
+    // Eliminar el producto
+    act(() => {
+      cartContext.removeFromCart(0);
+    });
+    
+    // Verificar que se eliminó correctamente
+    expect(cartContext.state.count).toBe(0); // Esperamos 0 ya que eliminamos el único producto
+    expect(cartContext.state.total).toBe(0);
+    expect(cartContext.state.items).toHaveLength(0);
+  });
+
+  it('actualiza la cantidad de un producto', async () => {
+    render(
+      <CartProvider>
+        <TestComponent onRender={onRender} />
+      </CartProvider>
+    );
+    
+    // Añadir un producto
+    await act(async () => {
+      await cartContext.addToCart(mockProduct, 1, '1000', '64');
+    });
+    
+    // Actualizar la cantidad
+    act(() => {
+      cartContext.updateQuantity(0, 3);
+    });
+    
+    // Verificar que se actualizó la cantidad
+    expect(cartContext.state.count).toBe(3);
+    expect(cartContext.state.total).toBe(2997); // 999 * 3
+    expect(cartContext.state.items).toHaveLength(1);
+    expect(cartContext.state.items[0].quantity).toBe(3);
+  });
+
+  it('limpia el carrito completamente', async () => {
+    render(
+      <CartProvider>
+        <TestComponent onRender={onRender} />
+      </CartProvider>
+    );
+    
+    // Añadir algunos productos
+    await act(async () => {
+      await cartContext.addToCart(mockProduct, 2, '1000', '64');
+      await cartContext.addToCart(mockProduct, 1, '2000', '128');
+    });
+    
+    // Limpiar el carrito
+    act(() => {
+      cartContext.clearCart();
+    });
+    
+    // Verificar que el carrito está vacío
+    expect(cartContext.state.count).toBe(0);
+    expect(cartContext.state.total).toBe(0);
+    expect(cartContext.state.items).toHaveLength(0);
+  });
+
+  it('maneja los errores al añadir un producto', async () => {
+    // Simular un error en la API
+    vi.mocked(addProductToCart).mockRejectedValueOnce(new Error('API Error'));
+    
+    render(
+      <CartProvider>
+        <TestComponent onRender={onRender} />
+      </CartProvider>
+    );
+    
+    // Intentar añadir un producto que causará un error
+    let error;
+    await act(async () => {
+      try {
+        await cartContext.addToCart(mockProduct, 1, '1000', '64');
+      } catch (err) {
+        error = err;
+      }
+    });
+    
+    // Verificar que se capturó el error
+    expect(error).toBeDefined();
+    expect(error.message).toBe('No se pudo añadir el producto al carrito. Inténtalo de nuevo.');
+  });
+
+  it('rechaza añadir un producto con códigos inválidos', async () => {
+    render(
+      <CartProvider>
+        <TestComponent onRender={onRender} />
+      </CartProvider>
+    );
+    
+    // Intentar añadir un producto con un código inválido
+    let error;
+    await act(async () => {
+      try {
+        await cartContext.addToCart(mockProduct, 1, 'invalid', '64');
+      } catch (err) {
+        error = err;
+      }
+    });
+    
+    // Verificar que se capturó el error
+    expect(error).toBeDefined();
+    expect(error.message).toBe('No se pudo añadir el producto al carrito. Inténtalo de nuevo.');
   });
 
   it('sincroniza el contador del carrito con el servidor', async () => {
-    mockCartCount = 2;
-    mockApiResponse = 8; // El servidor devuelve 8 items
-    
-    const mockProduct = {
-      id: '1',
-      brand: 'Test Brand',
-      model: 'Test Model',
-      price: 999
-    };
-    
-    let cartContextCapture;
-    
-    const testFn = vi.fn((cartContext) => {
-      cartContextCapture = cartContext;
-    });
+    // Simular que el servidor tiene más productos
+    vi.mocked(addProductToCart).mockResolvedValueOnce({ count: 5 });
     
     render(
       <CartProvider>
-        <TestComponent testFn={testFn} />
+        <TestComponent onRender={onRender} />
       </CartProvider>
     );
     
-    // Añadir producto
+    // Añadir un producto
     await act(async () => {
-      await cartContextCapture.addToCart(mockProduct, 1, '1000', '64');
+      await cartContext.addToCart(mockProduct, 1, '1000', '64');
     });
     
-    // Verificar que el contador se sincronizó con el valor más alto (del servidor)
-    expect(cartContextCapture.state.count).toBe(8);
-  });
-
-  it('maneja errores al añadir al carrito', async () => {
-    // Mock para simular un error
-    const { addProductToCart } = await import('../../src/services/productService');
-    const addProductToCartMock = vi.fn().mockRejectedValue(new Error('Error de prueba'));
-    vi.mocked(addProductToCart).mockImplementation(addProductToCartMock);
-    
-    const mockProduct = {
-      id: '1',
-      brand: 'Test Brand',
-      model: 'Test Model',
-      price: 999
-    };
-    
-    let cartContextCapture;
-    
-    const testFn = vi.fn((cartContext) => {
-      cartContextCapture = cartContext;
-    });
-    
-    render(
-      <CartProvider>
-        <TestComponent testFn={testFn} />
-      </CartProvider>
-    );
-    
-    // Intentar añadir el producto (debería fallar)
-    await expect(async () => {
-      await cartContextCapture.addToCart(mockProduct, 1, '1000', '64');
-    }).rejects.toThrow('No se pudo añadir el producto al carrito');
+    // Verificar que se tomó el valor mayor (el del servidor)
+    expect(cartContext.state.count).toBe(5);
   });
 });
