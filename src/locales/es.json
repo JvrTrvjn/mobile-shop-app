@@ -40,9 +40,7 @@
   "home": {
     "search": "Buscar por marca o modelo...",
     "loadingProducts": "Cargando productos...",
-    "noResults": "No se encontraron productos que coincidan con \"{term}\"",
-    "showingResults": "Mostrando {count} productos para \"{term}\"",
-    "showingAll": "Mostrando {count} productos",
+    "noResults": "No se encontraron productos que coincidan con tu búsqueda",
     "showAllResults": "Mostrar todos los resultados ({count})"
   },
   "cart": {
@@ -51,7 +49,8 @@
     "error": "No se pudo añadir el producto al carrito. Intenta más tarde.",
     "selectOptions": "Selecciona color y almacenamiento",
     "selectColor": "Selecciona un color",
-    "selectStorage": "Selecciona almacenamiento"
+    "selectStorage": "Selecciona almacenamiento",
+    "priceNotAvailable": "No se puede añadir - Precio no disponible"
   },
   "errors": {
     "apiError": "No se pudo conectar con el servidor",

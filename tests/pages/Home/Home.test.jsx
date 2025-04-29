@@ -33,7 +33,6 @@ vi.mock('../../../src/context/I18nContext', () => ({
         'home.noProducts': 'No hay productos disponibles',
         'home.tryAgain': 'Intentar de nuevo',
         'home.noResults': 'No hay productos disponibles',
-        'home.showingAll': 'Mostrando todos los productos',
         'home.search': 'Buscar productos',
         'errors.loadProducts': 'Error al cargar productos',
       }

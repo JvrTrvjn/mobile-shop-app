@@ -40,7 +40,7 @@
   "home": {
     "search": "Search by brand or model...",
     "loadingProducts": "Loading products...",
-    "noResults": "No products found matching \"{term}\"",
+    "noResults": "No products found matching your search",
     "showingResults": "Showing {count} products for \"{term}\"",
     "showingAll": "Showing {count} products",
     "showAllResults": "Show all results ({count})"
@@ -51,7 +51,8 @@
     "error": "Could not add product to cart. Please try again later.",
     "selectOptions": "Please select color and storage",
     "selectColor": "Please select a color",
-    "selectStorage": "Please select storage"
+    "selectStorage": "Please select storage",
+    "priceNotAvailable": "Cannot add - Price not available"
   },
   "errors": {
     "apiError": "Could not connect to server",

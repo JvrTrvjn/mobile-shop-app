@@ -1,5 +1,5 @@
 .app-header {
-  background-color: var(--color-light-background);
+  background-color: #f0f2f5; /* Nuevo color de fondo plateado suave */
   box-shadow: var(--shadow-sm);
   padding: var(--spacing-md) var(--spacing-lg);
   position: sticky;
@@ -50,8 +50,22 @@
   color: var(--color-light-text);
 }
 
+/* Nuevos estilos para los controles de usuario */
+.user-controls {
+  display: flex;
+  align-items: center;
+}
+
 .cart-container {
-  margin-left: var(--spacing-lg);
+  padding: var(--spacing-sm);
+  margin-right: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  transform: translateY(0.25rem); /* Bajar ligeramente el carrito */
+}
+
+.language-container {
+  padding: var(--spacing-sm);
 }
 
 @media (max-width: var(--breakpoint-md)) {

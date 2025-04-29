@@ -45,9 +45,13 @@ export function Header() {
           )}
         </div>
 
-        <div className="cart-container">
-          <CartCounter />
-          <LanguageSelector />
+        <div className="user-controls">
+          <div className="cart-container">
+            <CartCounter />
+          </div>
+          <div className="language-container">
+            <LanguageSelector />
+          </div>
         </div>
       </div>
     </header>
