@@ -13,21 +13,31 @@ export function ColorSelector({ colors, onColorSelect, selectedColor }) {
     return null
   }
 
-  const getColorStyle = colorCode => {
-    const colorMap = {
-      1: 'black',
-      2: 'white',
-      3: 'red',
-      4: 'blue',
-      5: 'green',
-      6: 'yellow',
-      7: 'purple',
-      8: 'gray',
-      9: 'silver',
-      10: 'gold',
+  const getColorStyle = (colorCode, colorName) => {
+    // Mapa de nombres comunes de colores a valores CSS
+    const nameToColor = {
+      'black': 'black',
+      'white': 'white',
+      'red': 'red',
+      'blue': 'blue',
+      'green': 'green',
+      'yellow': 'yellow',
+      'purple': 'purple',
+      'gray': 'gray',
+      'silver': 'silver',
+      'gold': 'gold'
     }
-
-    return colorMap[colorCode] || '#cccccc'
+    
+    // 1. Intenta obtener el color por nombre si está disponible
+    if (colorName) {
+      const lowerCaseName = colorName.toLowerCase();
+      if (nameToColor[lowerCaseName]) {
+        return nameToColor[lowerCaseName];
+      }
+    }
+    
+    // 2. Si no se encuentra por nombre, usar un color por defecto
+    return '#cccccc';
   }
 
   return (
@@ -38,8 +48,8 @@ export function ColorSelector({ colors, onColorSelect, selectedColor }) {
           className={`color-option ${selectedColor === color.code.toString() ? 'selected' : ''}`}
           onClick={() => onColorSelect(color.code.toString())}
         >
-          <div className="color-swatch" style={{ backgroundColor: getColorStyle(color.code) }} />
-          <span className="color-name">{color.name || `Color ${color.code}`}</span>
+          <div className="color-swatch" style={{ backgroundColor: getColorStyle(color.code, color.name) }} />
+          <span className="color-name">{color.name}</span>
         </div>
       ))}
     </div>
