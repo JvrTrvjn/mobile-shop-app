@@ -84,7 +84,6 @@ export function ProductDetail({ id: propId }) {
           setSelectedStorage(String(productData.options.storages[0].code))
         }
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error('Error loading product details:', err)
         setError(`Error al cargar los detalles del producto: ${err.message}`)
       } finally {

@@ -1,76 +1,88 @@
 // filepath: /Users/javit/Desktop/mobile-shop-app/src/services/error/useErrorHandler.js
-import { useCallback } from 'preact/hooks';
-import { useToast } from '../../context/ToastContext';
-import { ErrorService } from './errorService';
-import logger from '../../utils/logger';
+import { useCallback } from 'preact/hooks'
+import { useToast } from '../../context/ToastContext'
+import { ErrorService } from './errorService'
+import logger from '../../utils/logger'
 
 /**
  * Hook para manejar errores en componentes
  * Proporciona métodos para notificar diferentes tipos de errores al usuario
  * y registrarlos en el sistema de logs
- * 
+ *
  * @returns {Object} Métodos para manejar diferentes tipos de errores
  */
 export function useErrorHandler() {
-  const toast = useToast();
-  
+  const toast = useToast()
+
   /**
    * Notifica un error general al usuario y lo registra
    */
-  const notifyError = useCallback((error, options = {}) => {
-    const message = error.message || 'Ha ocurrido un error';
-    logger.error(message, error);
-    
-    if (!options.silent) {
-      toast.error(message, options.toastOptions);
-    }
-    
-    return error;
-  }, [toast]);
+  const notifyError = useCallback(
+    (error, options = {}) => {
+      const message = error.message || 'Ha ocurrido un error'
+      logger.error(message, error)
+
+      if (!options.silent) {
+        toast.error(message, options.toastOptions)
+      }
+
+      return error
+    },
+    [toast]
+  )
 
   /**
    * Notifica un error de API al usuario y lo registra
    */
-  const notifyApiError = useCallback((error, fallbackMessage, options = {}) => {
-    const errorObj = ErrorService.handleApiError(error, fallbackMessage);
-    
-    if (!options.silent) {
-      toast.error(errorObj.message, options.toastOptions);
-    }
-    
-    return errorObj;
-  }, [toast]);
+  const notifyApiError = useCallback(
+    (error, fallbackMessage, options = {}) => {
+      const errorObj = ErrorService.handleApiError(error, fallbackMessage)
+
+      if (!options.silent) {
+        toast.error(errorObj.message, options.toastOptions)
+      }
+
+      return errorObj
+    },
+    [toast]
+  )
 
   /**
    * Notifica un error de validación al usuario y lo registra
    */
-  const notifyValidationError = useCallback((field, message, options = {}) => {
-    const error = ErrorService.handleValidationError(field, message);
-    
-    if (!options.silent) {
-      toast.warning(error.message, options.toastOptions);
-    }
-    
-    return error;
-  }, [toast]);
+  const notifyValidationError = useCallback(
+    (field, message, options = {}) => {
+      const error = ErrorService.handleValidationError(field, message)
+
+      if (!options.silent) {
+        toast.warning(error.message, options.toastOptions)
+      }
+
+      return error
+    },
+    [toast]
+  )
 
   /**
    * Notifica un error de caché al usuario y lo registra
    */
-  const notifyCacheError = useCallback((error, action, options = {}) => {
-    const errorObj = ErrorService.handleCacheError(error, action);
-    
-    if (!options.silent) {
-      toast.error(errorObj.message, options.toastOptions);
-    }
-    
-    return errorObj;
-  }, [toast]);
+  const notifyCacheError = useCallback(
+    (error, action, options = {}) => {
+      const errorObj = ErrorService.handleCacheError(error, action)
+
+      if (!options.silent) {
+        toast.error(errorObj.message, options.toastOptions)
+      }
+
+      return errorObj
+    },
+    [toast]
+  )
 
   return {
     notifyError,
     notifyApiError,
     notifyValidationError,
-    notifyCacheError
-  };
+    notifyCacheError,
+  }
 }

@@ -7,6 +7,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:verbose": "vitest run --reporter verbose",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
@@ -19,6 +22,7 @@
     "@babel/eslint-parser": "^7.27.0",
     "@babel/preset-react": "^7.26.3",
     "@preact/preset-vite": "^2.10.1",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/preact": "^3.2.3",
     "eslint": "^8.57.1",
     "eslint-config-preact": "^1.5.0",

@@ -23,7 +23,7 @@ export function CartCounter() {
     const handleCartUpdate = () => {
       const storedCount = getCartCount()
       logger.log('CartCounter: evento cartUpdated detectado, contador:', storedCount)
-      
+
       if (count !== storedCount) {
         setCount(storedCount)
       }

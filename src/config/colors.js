@@ -1,7 +1,7 @@
 /**
  * Mapa de códigos de colores a sus valores CSS.
  * Se utiliza para representación visual de los colores.
- * 
+ *
  * @type {Object.<number, string>}
  */
 export const COLOR_MAP = {
@@ -15,24 +15,24 @@ export const COLOR_MAP = {
   1006: 'purple',
   1007: 'gray',
   1008: 'silver',
-  1009: 'gold'
+  1009: 'gold',
 }
 
 /**
  * Nombres de colores comunes a valores CSS
  */
 const COLOR_NAMES = {
-  'black': 'black',
-  'white': 'white',
-  'red': 'red',
-  'blue': 'blue',
-  'green': 'green',
-  'yellow': 'yellow',
-  'purple': 'purple',
-  'gray': 'gray',
-  'silver': 'silver',
-  'gold': 'gold',
-  'pure white': 'white'
+  black: 'black',
+  white: 'white',
+  red: 'red',
+  blue: 'blue',
+  green: 'green',
+  yellow: 'yellow',
+  purple: 'purple',
+  gray: 'gray',
+  silver: 'silver',
+  gold: 'gold',
+  'pure white': 'white',
 }
 
 /**
@@ -45,17 +45,17 @@ const COLOR_NAMES = {
 export function getColorByCode(colorCode, colorName, defaultColor = '#cccccc') {
   // 1. Intenta obtener el color del mapa de códigos
   if (colorCode && COLOR_MAP[colorCode]) {
-    return COLOR_MAP[colorCode];
+    return COLOR_MAP[colorCode]
   }
-  
+
   // 2. Si tenemos el nombre, intenta obtener el color por nombre
   if (colorName) {
-    const normalizedName = colorName.toLowerCase();
+    const normalizedName = colorName.toLowerCase()
     if (COLOR_NAMES[normalizedName]) {
-      return COLOR_NAMES[normalizedName];
+      return COLOR_NAMES[normalizedName]
     }
   }
-  
+
   // 3. Si todo falla, devuelve el color por defecto
-  return defaultColor;
+  return defaultColor
 }
