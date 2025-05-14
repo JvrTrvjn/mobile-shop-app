@@ -58,17 +58,33 @@ img:hover {
   z-index: 100;
   display: flex;
   justify-content: flex-end;
+  width: 100%; /* Asegurar que ocupe todo el ancho disponible */
 }
 
 .search-input-wrapper {
   position: relative;
   width: 300px;
-  max-width: 100%;
+  max-width: 100%; /* Nunca superar el ancho disponible */
   transition: width 0.3s ease;
 }
 
-.search-input-wrapper:focus-within {
-  width: 350px;
+/* Anulamos el efecto de expansión en pantallas pequeñas */
+@media (max-width: 768px) {
+  .search-input-wrapper,
+  .search-input-wrapper:focus-within {
+    width: 100%; /* Usar todo el ancho disponible */
+    max-width: 300px;
+  }
+  
+  .search-container {
+    justify-content: center; /* Centrar en pantallas pequeñas */
+  }
+}
+
+@media (min-width: 769px) {
+  .search-input-wrapper:focus-within {
+    width: 350px;
+  }
 }
 
 .search-input {
@@ -80,6 +96,7 @@ img:hover {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   background-color: #f9f9f9;
+  box-sizing: border-box; /* Asegurar que el padding no aumente el ancho */
 }
 
 .search-input:focus {
@@ -132,6 +149,7 @@ img:hover {
 
 .product-card-wrapper {
   height: 100%;
+  text-align: center; /* Centrar todo el texto en las tarjetas de productos */
 }
 
 .results-count {
