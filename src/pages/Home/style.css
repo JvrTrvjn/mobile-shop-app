@@ -149,6 +149,7 @@ img:hover {
 
 .product-card-wrapper {
   height: 100%;
+  text-align: center; /* Centrar todo el texto en las tarjetas de productos */
 }
 
 .results-count {

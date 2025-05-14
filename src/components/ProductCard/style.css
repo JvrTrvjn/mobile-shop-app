@@ -45,6 +45,7 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  text-align: center; /* Centrar todo el texto dentro de product-info */
 }
 
 .product-brand {
