@@ -1,5 +1,10 @@
 # 📱 Mobile Shop App
 
+<p align="center">
+  <a href="README_EN.md">English</a> |
+  <a href="README.md">Español</a>
+</p>
+
 > Aplicación web responsive de página única (SPA) desarrollada con Preact para navegar y comprar dispositivos móviles.
 
 ## 📋 Descripción General
